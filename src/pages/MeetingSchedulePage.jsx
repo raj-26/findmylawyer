@@ -7,7 +7,7 @@ import {
   Alert,
 } from '../ui';
 import { useBookings } from '../context/BookingContext';
-import { formatDate, formatTime } from '../utils';
+// import { formatDate, formatTime } from '../utils';
 
 export const MeetingSchedulePage = ({ onNavigate }) => {
   const { bookings, startConsultation, completeConsultation } = useBookings();
