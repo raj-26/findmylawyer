@@ -15,7 +15,6 @@ import { SubscriptionPage } from './pages/SubscriptionPage';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
-  const [selectedBookingDetail, setSelectedBookingDetail] = useState(null);
 
   const handleNavigate = (page) => {
     setCurrentPage(page);
@@ -30,7 +29,6 @@ const App = () => {
     const props = {
       onNavigate: handleNavigate,
       onLogout: handleLogout,
-      onViewBookingDetails: setSelectedBookingDetail,
     };
 
     switch (currentPage) {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { FileText, Upload, Download, Trash2, Eye, Search, Filter } from 'lucide-react';
-import { Card, CardHeader, CardTitle, Button, Input, Skeleton } from '../ui';
+import { FileText, Upload, Download, Trash2, Eye, Search } from 'lucide-react';
+import { Card, CardHeader, CardTitle, Button, Input } from '../ui';
 
 export const CaseFilesPage = ({ onNavigate }) => {
   const [files, setFiles] = useState([

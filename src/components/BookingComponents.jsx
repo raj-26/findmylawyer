@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, MessageSquare, Users, AlertCircle, Phone, Video, MessageCircle } from 'lucide-react';
+import { MapPin, MessageSquare, Users, Phone, Video, MessageCircle } from 'lucide-react';
 import { Card, Badge, Button } from '../ui';
 import { formatTimeAgo, formatCurrency, truncateText } from '../utils';
 

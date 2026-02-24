@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  TrendingUp,
   Calendar,
   Clock,
   DollarSign,
@@ -23,7 +22,6 @@ export const DashboardPage = ({ onNavigate, onViewBookingDetails }) => {
   const totalBookings = bookings.length;
   const pendingBookings = bookings.filter((b) => b.status === 'pending').length;
   const ongoingConsultations = bookings.filter((b) => b.status === 'ongoing').length;
-  const completedBookings = bookings.filter((b) => b.status === 'completed').length;
 
   // Mock earnings
   const monthlyEarnings = 45000;

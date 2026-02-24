@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, X, Star, ArrowRight } from 'lucide-react';
+import { Check, X, Star } from 'lucide-react';
 import { Card, CardHeader, CardTitle, Button, Modal } from '../ui';
 import { PRICING_PLANS } from '../constants';
 import { formatCurrency } from '../utils';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, TrendingUp } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, Input, Select, Button } from '../ui';
 import { BookingCard, EmptyBookingsState } from '../components/BookingComponents';
 import { useBookings } from '../context/BookingContext';

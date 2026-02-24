@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, Button, Badge, Modal } from '../ui';
 import { formatCurrency, formatDate } from '../utils';
 
 export const PaymentsPage = ({ onNavigate }) => {
-  const [payments, setPayments] = useState([
+  const [payments] = useState([
     {
       id: 'PAY001',
       clientName: 'Rajesh Kumar',

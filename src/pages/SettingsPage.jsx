@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Settings, Lock, Bell, HelpCircle, LogOut, Camera, Check } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, Button, Input, Select, Toggle } from '../ui';
+import { LogOut, Camera, Check } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, Button, Input } from '../ui';
 import { useAuth } from '../context/AuthContext';
 
 export const SettingsPage = ({ onNavigate, onLogout }) => {

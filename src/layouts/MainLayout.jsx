@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Menu,
-  X,
   Home,
   Calendar,
   FileText,
@@ -13,7 +11,6 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { Badge } from '../ui';
 
 export const Navbar = ({ currentPage, onNavigate }) => {
   const { user, logout } = useAuth();

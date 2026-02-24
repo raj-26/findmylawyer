@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Video, Phone, MessageCircle, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, Video } from 'lucide-react';
 import {
   Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
   Button,
   Badge,
   Alert,
@@ -19,13 +16,7 @@ export const MeetingSchedulePage = ({ onNavigate }) => {
   // Get scheduled meetings
   const scheduledMeetings = bookings.filter((b) => ['accepted', 'ongoing'].includes(b.status));
 
-  // Group by date
-  const groupedByDate = scheduledMeetings.reduce((acc, meeting) => {
-    const date = formatDate(meeting.createdAt, 'yyyy-MM-dd');
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(meeting);
-    return acc;
-  }, {});
+
 
   const meetingStatuses = {
     today: 0,
