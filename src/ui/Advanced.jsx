@@ -61,7 +61,7 @@ export const Alert = ({ type = 'info', title, message, onClose, className = '' }
       bg: 'bg-blue-50',
       border: 'border-l-4 border-blue-600',
       text: 'text-blue-900',
-      icon: 'ℹ️',
+      icon: null,
     },
     success: {
       bg: 'bg-emerald-50',
@@ -73,7 +73,7 @@ export const Alert = ({ type = 'info', title, message, onClose, className = '' }
       bg: 'bg-amber-50',
       border: 'border-l-4 border-amber-600',
       text: 'text-amber-900',
-      icon: '⚠️',
+      icon: null,
     },
     error: {
       bg: 'bg-red-50',

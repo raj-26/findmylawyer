@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Download, TrendingUp, DollarSign, Eye } from 'lucide-react';
+import { Download, TrendingUp, DollarSign, Eye, MoreVertical, Clock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, Button, Badge, Modal } from '../ui';
+import { PageHeader } from '../components/PageHeader';
 import { formatCurrency, formatDate } from '../utils';
 
 export const PaymentsPage = ({ onNavigate }) => {
@@ -32,12 +33,20 @@ export const PaymentsPage = ({ onNavigate }) => {
       type: 'Consultation',
       invoiceUrl: '#',
     },
+    {
+      id: 'PAY004',
+      clientName: 'Sunita Sharma',
+      amount: 5000,
+      date: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000),
+      status: 'completed',
+      type: 'Case Retainer',
+      invoiceUrl: '#',
+    },
   ]);
 
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Calculate statistics
   const totalEarnings = payments
     .filter((p) => p.status === 'completed')
     .reduce((sum, p) => sum + p.amount, 0);
@@ -54,180 +63,127 @@ export const PaymentsPage = ({ onNavigate }) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-primary-900 mb-2">Payment Records</h1>
-        <p className="text-primary-600">Track your earnings and manage payment history</p>
-      </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <PageHeader
+        title="Payment Records"
+        subtitle="Track your earnings and manage payment history"
+        showBack={true}
+        onBack={() => onNavigate('dashboard')}
+        rightAction={
+          <Button variant="secondary">
+            <Download size={16} className="mr-2" />
+            Export Report
+          </Button>
+        }
+      />
 
-      {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="flex items-start gap-4">
-          <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600">
-            <DollarSign size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-primary-600 mb-1">Total Earnings</p>
-            <h3 className="text-2xl font-bold text-primary-900">
-              {formatCurrency(totalEarnings)}
-            </h3>
-            <p className="text-xs text-emerald-600 mt-1">✓ Completed payments</p>
-          </div>
-        </Card>
-
-        <Card className="flex items-start gap-4">
-          <div className="p-3 bg-amber-50 rounded-lg text-amber-600">
-            <TrendingUp size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-primary-600 mb-1">This Month</p>
-            <h3 className="text-2xl font-bold text-primary-900">
-              {formatCurrency(monthlyEarnings)}
-            </h3>
-            <p className="text-xs text-amber-600 mt-1">📅 Feb 2026</p>
-          </div>
-        </Card>
-
-        <Card className="flex items-start gap-4">
-          <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-            <DollarSign size={24} />
-          </div>
-          <div>
-            <p className="text-sm text-primary-600 mb-1">Pending Amount</p>
-            <h3 className="text-2xl font-bold text-primary-900">
-              {formatCurrency(pendingAmount)}
-            </h3>
-            <p className="text-xs text-blue-600 mt-1">⏳ {payments.filter((p) => p.status === 'pending').length} payments</p>
-          </div>
-        </Card>
-      </div>
-
-      {/* Earnings Chart Placeholder */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Earnings Trend</CardTitle>
-        </CardHeader>
-        <div className="h-40 flex items-end justify-around px-4 pb-4">
-          {[12, 15, 10, 18, 22, 19, 25].map((value, idx) => (
-            <div key={idx} className="flex flex-col items-center gap-2">
-              <div
-                className="w-8 bg-gradient-to-t from-primary-800 to-primary-600 rounded-t"
-                style={{ height: `${(value / 30) * 100}%` }}
-              />
-              <span className="text-xs text-primary-500">W{idx + 1}</span>
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+        {/* Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Card>
+            <div className="p-6 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center">
+                <DollarSign size={24} className="text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm text-primary-600">Total Earnings</p>
+                <p className="text-2xl font-bold text-primary-900">{formatCurrency(totalEarnings)}</p>
+              </div>
             </div>
-          ))}
+          </Card>
+          <Card>
+            <div className="p-6 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center">
+                <TrendingUp size={24} className="text-amber-600" />
+              </div>
+              <div>
+                <p className="text-sm text-primary-600">This Month</p>
+                <p className="text-2xl font-bold text-primary-900">{formatCurrency(monthlyEarnings)}</p>
+              </div>
+            </div>
+          </Card>
+          <Card>
+            <div className="p-6 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Clock size={24} className="text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-primary-600">Pending Amount</p>
+                <p className="text-2xl font-bold text-primary-900">{formatCurrency(pendingAmount)}</p>
+              </div>
+            </div>
+          </Card>
         </div>
-      </Card>
 
-      {/* Payment Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Payment History</CardTitle>
-            <Button variant="secondary" size="sm">
-              📥 Export
-            </Button>
-          </div>
-        </CardHeader>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-primary-100">
-                <th className="text-left py-3 px-4 font-bold text-primary-900">Payment ID</th>
-                <th className="text-left py-3 px-4 font-bold text-primary-900">Client</th>
-                <th className="text-left py-3 px-4 font-bold text-primary-900">Type</th>
-                <th className="text-left py-3 px-4 font-bold text-primary-900">Amount</th>
-                <th className="text-left py-3 px-4 font-bold text-primary-900">Date</th>
-                <th className="text-left py-3 px-4 font-bold text-primary-900">Status</th>
-                <th className="text-right py-3 px-4 font-bold text-primary-900">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((payment) => (
-                <tr key={payment.id} className="border-b border-primary-100 hover:bg-primary-50">
-                  <td className="py-3 px-4 font-medium text-primary-900">{payment.id}</td>
-                  <td className="py-3 px-4 text-primary-700">{payment.clientName}</td>
-                  <td className="py-3 px-4 text-primary-600 text-sm">{payment.type}</td>
-                  <td className="py-3 px-4 font-bold text-primary-900">
-                    {formatCurrency(payment.amount)}
-                  </td>
-                  <td className="py-3 px-4 text-primary-600 text-sm">
-                    {formatDate(payment.date, 'dd MMM, yyyy')}
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge status={payment.status} size="sm" />
-                  </td>
-                  <td className="py-3 px-4 text-right">
-                    <div className="flex gap-2 justify-end">
-                      <button
-                        onClick={() => openPaymentDetails(payment)}
-                        className="p-1.5 hover:bg-blue-100 rounded text-accent-blue"
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <a
-                        href={payment.invoiceUrl}
-                        className="p-1.5 hover:bg-emerald-100 rounded text-accent-emerald"
-                      >
-                        <Download size={18} />
-                      </a>
-                    </div>
-                  </td>
+        {/* Payment Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Transactions</CardTitle>
+          </CardHeader>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left py-3 px-4 font-semibold text-primary-700">Client</th>
+                  <th className="text-left py-3 px-4 font-semibold text-primary-700">Amount</th>
+                  <th className="text-left py-3 px-4 font-semibold text-primary-700">Date</th>
+                  <th className="text-left py-3 px-4 font-semibold text-primary-700">Status</th>
+                  <th className="text-right py-3 px-4 font-semibold text-primary-700">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {payments.map((payment) => (
+                  <tr key={payment.id} className="hover:bg-gray-50">
+                    <td className="py-3 px-4">
+                      <div className="font-medium text-primary-900">{payment.clientName}</div>
+                      <div className="text-primary-600 text-xs">{payment.type}</div>
+                    </td>
+                    <td className="py-3 px-4 font-medium text-primary-900">{formatCurrency(payment.amount)}</td>
+                    <td className="py-3 px-4 text-primary-600">{formatDate(payment.date, 'dd MMM, yyyy')}</td>
+                    <td className="py-3 px-4">
+                      <Badge status={payment.status} />
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-1 justify-end">
+                        <Button variant="ghost" size="icon" onClick={() => openPaymentDetails(payment)}>
+                          <Eye size={16} />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical size={16} />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </main>
 
       {/* Payment Details Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Payment Details"
-      >
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Payment Details">
         {selectedPayment && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-primary-600 mb-1">Payment ID</p>
-                <p className="font-bold text-primary-900">{selectedPayment.id}</p>
-              </div>
-              <div>
-                <p className="text-sm text-primary-600 mb-1">Status</p>
-                <Badge status={selectedPayment.status} size="sm" />
-              </div>
-              <div>
-                <p className="text-sm text-primary-600 mb-1">Client Name</p>
-                <p className="font-bold text-primary-900">{selectedPayment.clientName}</p>
-              </div>
-              <div>
-                <p className="text-sm text-primary-600 mb-1">Amount</p>
-                <p className="font-bold text-primary-900 text-lg">
-                  {formatCurrency(selectedPayment.amount)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-primary-600 mb-1">Type</p>
-                <p className="font-bold text-primary-900">{selectedPayment.type}</p>
-              </div>
-              <div>
-                <p className="text-sm text-primary-600 mb-1">Date</p>
-                <p className="font-bold text-primary-900">
-                  {formatDate(selectedPayment.date, 'dd MMM, yyyy')}
-                </p>
-              </div>
+            <div className="text-center mb-4">
+              <p className="text-sm text-primary-600">Payment from {selectedPayment.clientName}</p>
+              <p className="text-4xl font-bold text-primary-900">{formatCurrency(selectedPayment.amount)}</p>
+              <Badge status={selectedPayment.status} className="mt-2" />
             </div>
-
-            <div className="border-t border-primary-100 pt-4 flex gap-2">
-              <Button variant="secondary" full>
-                <Download size={18} className="mr-2" />
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+              <div className="text-primary-600">Transaction ID</div>
+              <div className="text-primary-900 font-medium text-right">{selectedPayment.id}</div>
+              <div className="text-primary-600">Date</div>
+              <div className="text-primary-900 font-medium text-right">{formatDate(selectedPayment.date, 'PPpp')}</div>
+              <div className="text-primary-600">Payment For</div>
+              <div className="text-primary-900 font-medium text-right">{selectedPayment.type}</div>
+            </div>
+            <div className="border-t border-gray-200 pt-4 flex gap-2">
+              <Button variant="primary" className="flex-1">
+                <Download size={16} className="mr-2" />
                 Download Invoice
               </Button>
-              <Button variant="primary" full onClick={() => setIsModalOpen(false)}>
+              <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
                 Close
               </Button>
             </div>

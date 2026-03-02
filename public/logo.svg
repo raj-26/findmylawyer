@@ -1,0 +1,23 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Scale of Justice -->
+  <g transform="translate(100, 100)">
+    <!-- Center pole -->
+    <rect x="-3" y="-32" width="6" height="45" fill="white"/>
+    
+    <!-- Top knob -->
+    <circle cx="0" cy="-32" r="6" fill="white"/>
+    
+    <!-- Balance beam -->
+    <line x1="-38" y1="-12" x2="38" y2="-12" stroke="white" stroke-width="4" stroke-linecap="round"/>
+    
+    <!-- Left scale pan -->
+    <rect x="-52" y="-2" width="28" height="22" fill="none" stroke="white" stroke-width="4" rx="2"/>
+    <line x1="-38" y1="-2" x2="-38" y2="-20" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-38" y1="-20" x2="0" y2="-32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Right scale pan -->
+    <rect x="24" y="-2" width="28" height="22" fill="none" stroke="white" stroke-width="4" rx="2"/>
+    <line x1="38" y1="-2" x2="38" y2="-20" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <line x1="38" y1="-20" x2="0" y2="-32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,12 +1,26 @@
 import React, { useState } from 'react';
-import { LogOut, Camera, Check } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, Button, Input } from '../ui';
+import { User, Bell, Shield, LifeBuoy, LogOut, Camera, Check, Eye, EyeOff } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, Button, Input, Avatar, AvatarFallback, AvatarImage, Switch } from '../ui';
+import { PageHeader } from '../components/PageHeader';
 import { useAuth } from '../context/AuthContext';
+
+const SettingsTab = ({ icon, label, active, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-sm transition-colors w-full text-left ${
+      active ? 'bg-blue-100 text-blue-800' : 'hover:bg-gray-100 text-primary-700'
+    }`}
+  >
+    {icon}
+    {label}
+  </button>
+);
 
 export const SettingsPage = ({ onNavigate, onLogout }) => {
   const { user, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [isSaving, setIsSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: user.name,
@@ -15,14 +29,6 @@ export const SettingsPage = ({ onNavigate, onLogout }) => {
     specialization: user.specialization,
     experience: user.experience,
     location: user.location,
-  });
-
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    smsNotifications: true,
-    pushNotifications: true,
-    bookingAlerts: true,
-    paymentAlerts: true,
   });
 
   const handleInputChange = (e) => {
@@ -35,324 +41,169 @@ export const SettingsPage = ({ onNavigate, onLogout }) => {
     setTimeout(() => {
       updateProfile(formData);
       setIsSaving(false);
+      // In a real app, show a toast notification
       alert('Profile updated successfully!');
     }, 1000);
   };
 
   const tabs = [
-    { id: 'profile', label: 'Profile Settings', icon: '👤' },
-    { id: 'availability', label: 'Availability', icon: '📅' },
-    { id: 'notifications', label: 'Notifications', icon: '🔔' },
-    { id: 'security', label: 'Security & Privacy', icon: '🔒' },
-    { id: 'support', label: 'Help & Support', icon: '❓' },
+    { id: 'profile', label: 'Profile', icon: <User size={20} /> },
+    { id: 'notifications', label: 'Notifications', icon: <Bell size={20} /> },
+    { id: 'security', label: 'Security', icon: <Shield size={20} /> },
+    { id: 'support', label: 'Help & Support', icon: <LifeBuoy size={20} /> },
   ];
 
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-primary-900 mb-2">Settings</h1>
-        <p className="text-primary-600">Manage your profile and preferences</p>
-      </div>
-
-      {/* Tabs Navigation */}
-      <div className="flex gap-2 border-b border-primary-200 overflow-x-auto">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-3 font-medium border-b-2 transition-colors whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'border-primary-800 text-primary-900'
-                : 'border-transparent text-primary-600 hover:text-primary-900'
-            }`}
-          >
-            {tab.icon} {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Profile Settings Tab */}
-      {activeTab === 'profile' && (
-        <div className="space-y-6">
-          {/* Profile Picture */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile Picture</CardTitle>
-              <CardDescription>Update your profile photo</CardDescription>
-            </CardHeader>
-            <div className="flex items-center gap-6">
-              <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center text-3xl font-bold text-primary-900">
-                {user.avatar}
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Picture</CardTitle>
+              </CardHeader>
+              <div className="p-6 flex items-center gap-6">
+                <Avatar className="w-20 h-20 min-w-[5rem] min-h-[5rem] aspect-square">
+                  <AvatarImage src={user.avatarUrl} />
+                  <AvatarFallback className="text-3xl">{user.name[0]}</AvatarFallback>
+                </Avatar>
+                <Button variant="secondary"><Camera size={16} className="mr-2" /> Upload Photo</Button>
               </div>
-              <Button variant="secondary" className="flex items-center gap-2">
-                <Camera size={18} />
-                Upload Photo
-              </Button>
-            </div>
-          </Card>
-
-          {/* Personal Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Update your basic information</CardDescription>
-            </CardHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Full Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-              />
-              <Input
-                label="Email Address"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-              <Input
-                label="Phone Number"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-              />
-              <Input
-                label="Location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-              />
-            </div>
-          </Card>
-
-          {/* Professional Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Professional Information</CardTitle>
-              <CardDescription>Your legal expertise details</CardDescription>
-            </CardHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Specialization"
-                name="specialization"
-                value={formData.specialization}
-                onChange={handleInputChange}
-              />
-              <Input
-                label="Years of Experience"
-                name="experience"
-                type="number"
-                value={formData.experience}
-                onChange={handleInputChange}
-              />
-            </div>
-          </Card>
-
-          {/* Save Button */}
-          <div className="flex gap-2">
-            <Button
-              onClick={handleSaveProfile}
-              variant="primary"
-              loading={isSaving}
-              className="flex items-center gap-2"
-            >
-              <Check size={18} />
-              Save Changes
-            </Button>
-            <Button variant="secondary">Cancel</Button>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Personal Information</CardTitle>
+              </CardHeader>
+              <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input label="Full Name" name="name" value={formData.name} onChange={handleInputChange} />
+                <Input label="Email Address" name="email" type="email" value={formData.email} onChange={handleInputChange} />
+                <Input label="Phone Number" name="phone" value={formData.phone} onChange={handleInputChange} />
+                <Input label="Location" name="location" value={formData.location} onChange={handleInputChange} />
+                <Input label="Specialization" name="specialization" value={formData.specialization} onChange={handleInputChange} />
+                <Input label="Years of Experience" name="experience" type="number" value={formData.experience} onChange={handleInputChange} />
+              </div>
+              <div className="p-6 border-t flex justify-end">
+                <Button onClick={handleSaveProfile} loading={isSaving}><Check size={16} className="mr-2" /> Save Changes</Button>
+              </div>
+            </Card>
           </div>
-        </div>
-      )}
-
-      {/* Availability Tab */}
-      {activeTab === 'availability' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Availability Schedule</CardTitle>
-            <CardDescription>Set your consultation availability</CardDescription>
-          </CardHeader>
-          <div className="space-y-4">
-            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(
-              (day) => (
-                <div key={day} className="flex items-center justify-between p-3 bg-primary-50 rounded">
-                  <span className="font-medium text-primary-900">{day}</span>
-                  <div className="flex gap-2">
-                    <Input
-                      type="time"
-                      defaultValue="09:00"
-                      className="w-32"
-                    />
-                    <span className="flex items-center text-primary-600">to</span>
-                    <Input
-                      type="time"
-                      defaultValue="17:00"
-                      className="w-32"
-                    />
+        );
+      case 'notifications':
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle>Notification Settings</CardTitle>
+              <CardDescription>Manage how you receive alerts.</CardDescription>
+            </CardHeader>
+            <div className="p-6 space-y-4">
+              {([
+                { id: 'email', label: 'Email Notifications', desc: 'Receive updates via email.' },
+                { id: 'sms', label: 'SMS Notifications', desc: 'Get alerts on your phone.' },
+                { id: 'booking', label: 'New Booking Alerts', desc: 'Instant alert for new bookings.' },
+                { id: 'payment', label: 'Payment Confirmations', desc: 'Alerts for successful payments.' },
+              ]).map(item => (
+                <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-primary-900">{item.label}</p>
+                    <p className="text-sm text-primary-600">{item.desc}</p>
                   </div>
+                  <Switch defaultChecked={true} />
                 </div>
-              )
-            )}
-            <Button variant="primary" className="mt-4">
-              Save Availability
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Notifications Tab */}
-      {activeTab === 'notifications' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Notification Preferences</CardTitle>
-            <CardDescription>Control how you receive notifications</CardDescription>
-          </CardHeader>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-primary-50 rounded">
-              <div>
-                <p className="font-medium text-primary-900">Email Notifications</p>
-                <p className="text-sm text-primary-600">Receive updates via email</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={notificationSettings.emailNotifications}
-                onChange={(e) =>
-                  setNotificationSettings((prev) => ({
-                    ...prev,
-                    emailNotifications: e.target.checked,
-                  }))
-                }
-                className="w-5 h-5 cursor-pointer"
-              />
-            </div>
-            <div className="flex items-center justify-between p-3 bg-primary-50 rounded">
-              <div>
-                <p className="font-medium text-primary-900">SMS Notifications</p>
-                <p className="text-sm text-primary-600">Receive updates via SMS</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={notificationSettings.smsNotifications}
-                onChange={(e) =>
-                  setNotificationSettings((prev) => ({
-                    ...prev,
-                    smsNotifications: e.target.checked,
-                  }))
-                }
-                className="w-5 h-5 cursor-pointer"
-              />
-            </div>
-            <div className="flex items-center justify-between p-3 bg-primary-50 rounded">
-              <div>
-                <p className="font-medium text-primary-900">Booking Alerts</p>
-                <p className="text-sm text-primary-600">Get notified of new booking requests</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={notificationSettings.bookingAlerts}
-                onChange={(e) =>
-                  setNotificationSettings((prev) => ({
-                    ...prev,
-                    bookingAlerts: e.target.checked,
-                  }))
-                }
-                className="w-5 h-5 cursor-pointer"
-              />
-            </div>
-            <Button variant="primary" className="mt-4">
-              Save Preferences
-            </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Security Tab */}
-      {activeTab === 'security' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Change Password</CardTitle>
-              <CardDescription>Update your password regularly</CardDescription>
-            </CardHeader>
-            <div className="space-y-4">
-              <Input label="Current Password" type="password" />
-              <Input label="New Password" type="password" />
-              <Input label="Confirm New Password" type="password" />
-              <Button variant="primary">Update Password</Button>
+              ))}
             </div>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Two-Factor Authentication</CardTitle>
-              <CardDescription>Add extra security to your account</CardDescription>
-            </CardHeader>
-            <Button variant="secondary">Enable 2FA</Button>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Login Activity</CardTitle>
-              <CardDescription>Recent logins to your account</CardDescription>
-            </CardHeader>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-primary-50 rounded">
-                <div>
-                  <p className="font-medium text-primary-900">Chrome on Windows</p>
-                  <p className="text-sm text-primary-600">Today at 2:30 PM</p>
+        );
+      case 'security':
+        return (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Change Password</CardTitle>
+              </CardHeader>
+              <div className="p-6 space-y-4">
+                <Input label="Current Password" type="password" />
+                <div className="relative">
+                  <Input label="New Password" type={showPassword ? 'text' : 'password'} />
+                  <Button variant="ghost" size="icon" className="absolute right-1 top-7" onClick={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </Button>
                 </div>
-                <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">Current</span>
               </div>
-            </div>
-          </Card>
-        </div>
-      )}
+              <div className="p-6 border-t flex justify-end">
+                <Button>Update Password</Button>
+              </div>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Two-Factor Authentication (2FA)</CardTitle>
+                <CardDescription>Add an extra layer of security to your account.</CardDescription>
+              </CardHeader>
+              <div className="p-6 flex items-center justify-between">
+                <p className="text-sm text-primary-700">Status: <span className="font-bold text-red-600">Disabled</span></p>
+                <Button variant="secondary">Enable 2FA</Button>
+              </div>
+            </Card>
+          </div>
+        );
+      case 'support':
+        return (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Help & Support</CardTitle>
+                <CardDescription>Find answers or get in touch.</CardDescription>
+              </CardHeader>
+              <div className="p-6 space-y-3">
+                <Button variant="outline" className="w-full justify-start">Visit FAQ</Button>
+                <Button variant="outline" className="w-full justify-start">Contact Support</Button>
+              </div>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Logout</CardTitle>
+                <CardDescription>You can logout from your account here.</CardDescription>
+              </CardHeader>
+              <div className="p-6">
+                <Button variant="danger" onClick={onLogout}><LogOut size={16} className="mr-2" /> Logout</Button>
+              </div>
+            </Card>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
-      {/* Support Tab */}
-      {activeTab === 'support' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Help & Support</CardTitle>
-              <CardDescription>Get help with your account</CardDescription>
-            </CardHeader>
-            <div className="space-y-3">
-              <Button variant="secondary" full className="justify-start">
-                📚 Knowledge Base
-              </Button>
-              <Button variant="secondary" full className="justify-start">
-                💬 Contact Support
-              </Button>
-              <Button variant="secondary" full className="justify-start">
-                📧 Email Support
-              </Button>
-            </div>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Delete Account</CardTitle>
-              <CardDescription>Permanently delete your account and data</CardDescription>
-            </CardHeader>
-            <p className="text-sm text-primary-600 mb-4">
-              This action is irreversible. Please ensure you have downloaded all necessary data.
-            </p>
-            <Button variant="danger">Delete Account</Button>
-          </Card>
-
-          <div className="flex gap-2">
-            <Button
-              onClick={onLogout}
-              variant="danger"
-              className="flex items-center gap-2"
-            >
-              <LogOut size={18} />
-              Logout
-            </Button>
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <PageHeader
+        title="Settings"
+        subtitle="Manage your account and preferences"
+        showBack={true}
+        onBack={() => onNavigate('dashboard')}
+      />
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            <Card>
+              <div className="p-4 space-y-2">
+                {tabs.map((tab) => (
+                  <SettingsTab
+                    key={tab.id}
+                    icon={tab.icon}
+                    label={tab.label}
+                    active={activeTab === tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                  />
+                ))}
+              </div>
+            </Card>
+          </div>
+          <div className="lg:col-span-3">
+            {renderContent()}
           </div>
         </div>
-      )}
+      </main>
     </div>
   );
 };
