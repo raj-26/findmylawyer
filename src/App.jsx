@@ -17,9 +17,11 @@ import { SubscriptionPage } from './pages/SubscriptionPage';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [navigationState, setNavigationState] = useState(null);
 
-  const handleNavigate = (page) => {
+  const handleNavigate = (page, state = null) => {
     setCurrentPage(page);
+    setNavigationState(state);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -31,6 +33,7 @@ const App = () => {
     const props = {
       onNavigate: handleNavigate,
       onLogout: handleLogout,
+      navState: navigationState,
     };
 
     switch (currentPage) {

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FileText, Upload, Download, Trash2, Eye, Search, Folder, File, HardDrive } from 'lucide-react';
-import { Card, CardHeader, CardTitle, Button, Input } from '../ui';
+import { Card, CardHeader, CardTitle, Button, Input, Avatar, AvatarImage, AvatarFallback } from '../ui';
 import { PageHeader } from '../components/PageHeader';
+import { useAuth } from '../context/AuthContext';
 
 export const CaseFilesPage = ({ onNavigate }) => {
+  const { user } = useAuth();
   const [files, setFiles] = useState([
     {
       id: 1,
@@ -34,6 +36,7 @@ export const CaseFilesPage = ({ onNavigate }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const categories = ['all', 'Evidence', 'Statements', 'Court Documents', 'Agreements'];
 
@@ -43,20 +46,34 @@ export const CaseFilesPage = ({ onNavigate }) => {
     return matchesSearch && matchesCategory;
   });
 
+  const formatFileSize = (bytes) => {
+    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${bytes} B`;
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   const handleFileUpload = (e) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length === 0) return;
+
     setIsUploading(true);
-    // Simulate file upload
+
     setTimeout(() => {
-      const newFile = {
-        id: files.length + 1,
-        name: 'New Document.pdf',
-        size: '1.8 MB',
+      const newFiles = selectedFiles.map((file, index) => ({
+        id: Date.now() + index,
+        name: file.name,
+        size: formatFileSize(file.size),
         uploadedAt: new Date(),
-        type: 'PDF',
+        type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
         category: 'Evidence',
-      };
-      setFiles([newFile, ...files]);
+      }));
+      setFiles((prev) => [...newFiles, ...prev]);
       setIsUploading(false);
+      e.target.value = '';
     }, 1500);
   };
 
@@ -80,10 +97,23 @@ export const CaseFilesPage = ({ onNavigate }) => {
         showBack={true}
         onBack={() => onNavigate('dashboard')}
         rightAction={
-          <Button onClick={handleFileUpload} loading={isUploading}>
-            <Upload size={16} className="mr-2" />
-            {isUploading ? 'Uploading...' : 'Upload File'}
-          </Button>
+          <div className="flex items-center gap-3">
+            <Avatar className="w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] aspect-square border border-white/20">
+              <AvatarImage src={user.avatarUrl} />
+              <AvatarFallback>{user.name?.[0] || 'U'}</AvatarFallback>
+            </Avatar>
+            <Button onClick={handleUploadClick} loading={isUploading}>
+              <Upload size={16} className="mr-2" />
+              {isUploading ? 'Uploading...' : 'Upload File'}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+          </div>
         }
       />
 

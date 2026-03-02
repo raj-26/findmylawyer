@@ -133,16 +133,6 @@ export const SettingsPage = ({ onNavigate, onLogout }) => {
                 <Button>Update Password</Button>
               </div>
             </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Two-Factor Authentication (2FA)</CardTitle>
-                <CardDescription>Add an extra layer of security to your account.</CardDescription>
-              </CardHeader>
-              <div className="p-6 flex items-center justify-between">
-                <p className="text-sm text-primary-700">Status: <span className="font-bold text-red-600">Disabled</span></p>
-                <Button variant="secondary">Enable 2FA</Button>
-              </div>
-            </Card>
           </div>
         );
       case 'support':

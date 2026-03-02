@@ -93,7 +93,10 @@ export const BookingManagementPage = ({ onNavigate }) => {
               <BookingCard
                 key={booking.id}
                 booking={booking}
-                onAccept={() => acceptBooking(booking.id)}
+                onAccept={() => {
+                  acceptBooking(booking.id);
+                  onNavigate('chat', { clientName: booking.clientName });
+                }}
                 onReject={() => updateBookingStatus(booking.id, 'rejected')}
                 onStartCall={() => onNavigate('chat')}
                 showActions={booking.status === 'pending'}

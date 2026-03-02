@@ -160,7 +160,10 @@ export const DashboardPage = ({ onNavigate, onLogout }) => {
                     <BookingCard
                       key={booking.id}
                       booking={booking}
-                      onAccept={() => acceptBooking(booking.id)}
+                      onAccept={() => {
+                        acceptBooking(booking.id);
+                        onNavigate('chat', { clientName: booking.clientName });
+                      }}
                       onReject={() => {}}
                       onStartCall={() => onNavigate('chat')}
                       showActions={booking.status === 'pending'}
@@ -217,7 +220,8 @@ export const DashboardPage = ({ onNavigate, onLogout }) => {
             {/* Quick Actions */}
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle>AI Assist
+                </CardTitle>
               </CardHeader>
               <div className="space-y-2 px-6 pb-6">
                 <Button

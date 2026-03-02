@@ -6,20 +6,20 @@ import { PageHeader } from '../components/PageHeader';
 const ChatListItem = ({ chat, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`w-full text-left p-3 rounded-lg transition-colors flex items-center gap-3 ${
+    className={`w-full min-w-0 text-left p-3 rounded-lg transition-colors flex items-center gap-3 ${
       active ? 'bg-blue-100' : 'hover:bg-gray-100'
     }`}
   >
-    <Avatar>
+    <Avatar className="shrink-0">
       <AvatarImage src={chat.avatar} />
       <AvatarFallback>{chat.name[0]}</AvatarFallback>
     </Avatar>
-    <div className="flex-1">
-      <div className="flex justify-between items-center">
-        <p className={`font-bold text-sm ${active ? 'text-blue-800' : 'text-primary-900'}`}>{chat.name}</p>
-        <p className={`text-xs ${active ? 'text-blue-600' : 'text-primary-500'}`}>{chat.time}</p>
+    <div className="flex-1 min-w-0">
+      <div className="flex justify-between items-center gap-2 min-w-0">
+        <p className={`font-bold text-sm truncate ${active ? 'text-blue-800' : 'text-primary-900'}`}>{chat.name}</p>
+        <p className={`text-xs shrink-0 ${active ? 'text-blue-600' : 'text-primary-500'}`}>{chat.time}</p>
       </div>
-      <p className={`text-xs truncate ${active ? 'text-blue-700' : 'text-primary-600'}`}>{chat.lastMessage}</p>
+      <p className={`text-xs truncate block ${active ? 'text-blue-700' : 'text-primary-600'}`}>{chat.lastMessage}</p>
     </div>
   </button>
 );
@@ -42,7 +42,7 @@ const MessageBubble = ({ message, isOwn }) => (
   </div>
 );
 
-export const ChatPage = ({ onNavigate }) => {
+export const ChatPage = ({ onNavigate, navState }) => {
   const [chats] = useState([
     { id: 1, name: 'Rajesh Kumar', avatar: '', lastMessage: 'Thank you for the guidance!', time: '10:45 AM', active: true },
     { id: 2, name: 'Priya Patel', avatar: '', lastMessage: 'Okay, I will send the documents.', time: 'Yesterday', active: false },
@@ -61,6 +61,16 @@ export const ChatPage = ({ onNavigate }) => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (!navState?.clientName) return;
+    const matchedChat = chats.find(
+      (chat) => chat.name.toLowerCase() === navState.clientName.toLowerCase()
+    );
+    if (matchedChat) {
+      setActiveChat(matchedChat);
+    }
+  }, [navState, chats]);
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
