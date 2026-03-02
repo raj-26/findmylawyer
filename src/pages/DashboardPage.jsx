@@ -32,7 +32,6 @@ export const DashboardPage = ({ onNavigate, onLogout }) => {
         title="Dashboard"
         subtitle="Manage your consultations and earnings"
         showBack={false}
-        centerTitle={true}
         leftAction={
           <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl bg-black/20 border border-white/10">
             <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
@@ -45,12 +44,50 @@ export const DashboardPage = ({ onNavigate, onLogout }) => {
           </div>
         }
         rightAction={
-          <button
-            onClick={onLogout}
-            className="px-4 py-2 text-white hover:bg-primary-700 rounded-lg transition-colors"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onNavigate('chat')}
+              className="px-3 py-2 text-sm text-white hover:bg-primary-700 rounded-lg transition-colors"
+            >
+              Chat
+            </button>
+            <button
+              onClick={() => onNavigate('payments')}
+              className="px-3 py-2 text-sm text-white hover:bg-primary-700 rounded-lg transition-colors"
+            >
+              Earnings
+            </button>
+            <button
+              onClick={() => onNavigate('settings')}
+              className="px-3 py-2 text-sm text-white hover:bg-primary-700 rounded-lg transition-colors"
+            >
+              Settings
+            </button>
+            <button
+              onClick={() => onNavigate('bookings')}
+              className="px-3 py-2 text-sm text-white hover:bg-primary-700 rounded-lg transition-colors"
+            >
+              Bookings
+            </button>
+            <button
+              onClick={() => onNavigate('cases')}
+              className="px-3 py-2 text-sm text-white hover:bg-primary-700 rounded-lg transition-colors"
+            >
+              Cases
+            </button>
+            <button
+              onClick={() => onNavigate('subscription')}
+              className="px-3 py-2 text-sm text-white hover:bg-primary-700 rounded-lg transition-colors"
+            >
+              Subscription
+            </button>
+            <button
+              onClick={onLogout}
+              className="px-3 py-2 text-sm text-white hover:bg-primary-700 rounded-lg transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         }
       />
 
@@ -184,28 +221,36 @@ export const DashboardPage = ({ onNavigate, onLogout }) => {
               </CardHeader>
               <div className="space-y-2 px-6 pb-6">
                 <Button
+                  onClick={() => onNavigate('ai-help')}
+                  variant="secondary"
+                  full
+                  className="justify-start"
+                >
+                  AI Help
+                </Button>
+                <Button
                   onClick={() => onNavigate('schedule')}
                   variant="secondary"
                   full
                   className="justify-start"
                 >
-                  Update Schedule
+                  Schedule Meeting
                 </Button>
                 <Button
-                  onClick={() => onNavigate('settings')}
+                  onClick={() => onNavigate('demand-draft')}
                   variant="secondary"
                   full
                   className="justify-start"
                 >
-                  Profile Settings
+                  Demand Draft
                 </Button>
                 <Button
-                  onClick={() => onNavigate('payments')}
+                  onClick={() => onNavigate('cases')}
                   variant="secondary"
                   full
                   className="justify-start"
                 >
-                  View Earnings
+                  Help in Case File Reading
                 </Button>
               </div>
             </Card>

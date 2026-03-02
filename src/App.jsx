@@ -10,6 +10,8 @@ import { MeetingSchedulePage } from './pages/MeetingSchedulePage';
 import { CaseFilesPage } from './pages/CaseFilesPage';
 import { PaymentsPage } from './pages/PaymentsPage';
 import { ChatPage } from './pages/ChatPage';
+import { AIHelpPage } from './pages/AIHelpPage';
+import { DemandDraftPage } from './pages/DemandDraftPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
 
@@ -44,6 +46,10 @@ const App = () => {
         return <PaymentsPage {...props} />;
       case 'chat':
         return <ChatPage {...props} />;
+      case 'ai-help':
+        return <AIHelpPage {...props} />;
+      case 'demand-draft':
+        return <DemandDraftPage {...props} />;
       case 'settings':
         return <SettingsPage {...props} />;
       case 'subscription':

@@ -26,10 +26,10 @@ export const BookingManagementPage = ({ onNavigate }) => {
 
   // Calculate statistics
   const stats = [
-    { label: 'Total', count: bookings.length },
-    { label: 'Pending', count: bookings.filter((b) => b.status === 'pending').length },
-    { label: 'Accepted', count: bookings.filter((b) => b.status === 'accepted').length },
-    { label: 'Ongoing', count: bookings.filter((b) => b.status === 'ongoing').length },
+    { label: 'Total', count: bookings.length, numberColor: 'text-blue-700' },
+    { label: 'Pending', count: bookings.filter((b) => b.status === 'pending').length, numberColor: 'text-amber-600' },
+    { label: 'Accepted', count: bookings.filter((b) => b.status === 'accepted').length, numberColor: 'text-emerald-600' },
+    { label: 'Ongoing', count: bookings.filter((b) => b.status === 'ongoing').length, numberColor: 'text-indigo-700' },
   ];
 
   return (
@@ -48,7 +48,7 @@ export const BookingManagementPage = ({ onNavigate }) => {
             <Card key={stat.label}>
               <div className="p-6 text-center">
                 <p className="text-sm text-primary-600 mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold text-primary-900">{stat.count}</p>
+                <p className={`text-3xl font-bold ${stat.numberColor}`}>{stat.count}</p>
               </div>
             </Card>
           ))}
