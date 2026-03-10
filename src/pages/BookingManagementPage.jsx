@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
-import { Card, CardHeader, CardTitle, Input, Select } from '../ui';
-import { BookingCard, EmptyBookingsState } from '../components/BookingComponents';
+import { Card, Input } from '../ui';
 import { PageHeader } from '../components/PageHeader';
 import { useBookings } from '../context/BookingContext';
 
 export const BookingManagementPage = ({ onNavigate }) => {
-  const { bookings, acceptBooking, updateBookingStatus, getFilteredBookings } = useBookings();
+  const { acceptBooking, updateBookingStatus, getFilteredBookings } = useBookings();
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -16,51 +15,39 @@ export const BookingManagementPage = ({ onNavigate }) => {
     booking.caseType.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const statusOptions = [
-    { value: 'all', label: 'All Bookings' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'accepted', label: 'Accepted' },
-    { value: 'ongoing', label: 'Ongoing' },
-    { value: 'completed', label: 'Completed' },
-  ];
-
-  // Calculate statistics
-  const stats = [
-    { label: 'Total', count: bookings.length, numberColor: 'text-blue-700' },
-    { label: 'Pending', count: bookings.filter((b) => b.status === 'pending').length, numberColor: 'text-amber-600' },
-    { label: 'Accepted', count: bookings.filter((b) => b.status === 'accepted').length, numberColor: 'text-emerald-600' },
-    { label: 'Ongoing', count: bookings.filter((b) => b.status === 'ongoing').length, numberColor: 'text-indigo-700' },
-  ];
+  const statusTabs = ['all', 'pending', 'accepted', 'ongoing', 'completed'];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div>
       <PageHeader
-        title="Booking Management"
-        subtitle="Review and manage all your booking requests"
-        showBack={true}
-        onBack={() => onNavigate('dashboard')}
+        title="Bookings"
+        subtitle="Manage all consultation requests"
+        showBack={false}
       />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat) => (
-            <Card key={stat.label}>
-              <div className="p-6 text-center">
-                <p className="text-sm text-primary-600 mb-1">{stat.label}</p>
-                <p className={`text-3xl font-bold ${stat.numberColor}`}>{stat.count}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
+      <div>
+        <Card className="mb-5 p-0">
+          <div className="p-3">
+            <div className="flex flex-wrap gap-2">
+              {statusTabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSelectedStatus(tab)}
+                  className={`px-5 py-2.5 rounded-xl font-semibold capitalize ${
+                    selectedStatus === tab
+                      ? 'bg-[#071b33] text-white'
+                      : 'bg-transparent text-slate-500 hover:bg-slate-100'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+        </Card>
 
-        {/* Filters and Search */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Search & Filter</CardTitle>
-          </CardHeader>
-          <div className="space-y-4 px-6 pb-6">
-            {/* Search bar */}
+        <Card className="mb-6 p-0">
+          <div className="p-4">
             <div className="relative">
               <Search size={18} className="absolute left-3 top-3 text-primary-400" />
               <Input
@@ -70,41 +57,61 @@ export const BookingManagementPage = ({ onNavigate }) => {
                 className="pl-10"
               />
             </div>
-
-            {/* Filter Controls */}
-            <Select
-              label="Status"
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              options={statusOptions.map((opt) => ({
-                value: opt.value,
-                label: opt.label,
-              }))}
-            />
           </div>
         </Card>
 
-        {/* Bookings List */}
         {filteredBookings.length === 0 ? (
-          <EmptyBookingsState onRefresh={() => window.location.reload()} />
+          <Card className="text-center py-16">
+            <p className="text-slate-500">No bookings found for this filter.</p>
+          </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {filteredBookings.map((booking) => (
-              <BookingCard
-                key={booking.id}
-                booking={booking}
-                onAccept={() => {
-                  acceptBooking(booking.id);
-                  onNavigate('chat', { clientName: booking.clientName });
-                }}
-                onReject={() => updateBookingStatus(booking.id, 'rejected')}
-                onStartCall={() => onNavigate('chat')}
-                showActions={booking.status === 'pending'}
-              />
+              <Card key={booking.id} className="p-0">
+                <div className="p-6">
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                      <h3 className="text-2xl font-bold text-slate-900">{booking.clientName}</h3>
+                      <p className="text-slate-500">{booking.caseType} • {booking.location} • {booking.language}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm">● AI Call Done</span>
+                      <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm">{booking.urgency}</span>
+                      <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-sm capitalize">{booking.status}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-slate-600 bg-slate-50 rounded-xl px-4 py-3 mb-4">"{booking.description}"</p>
+
+                  <div className="flex flex-wrap gap-3">
+                    {booking.status === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => {
+                            acceptBooking(booking.id);
+                            onNavigate('chat', { clientName: booking.clientName });
+                          }}
+                          className="px-6 py-2.5 rounded-xl bg-emerald-500 text-white font-semibold"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => updateBookingStatus(booking.id, 'rejected')}
+                          className="px-6 py-2.5 rounded-xl bg-red-500 text-white font-semibold"
+                        >
+                          Decline
+                        </button>
+                      </>
+                    )}
+                    <button onClick={() => onNavigate('ai-help')} className="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-800 font-semibold">AI Intelligence</button>
+                    <button onClick={() => onNavigate('cases')} className="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-800 font-semibold">View Details</button>
+                  </div>
+                </div>
+              </Card>
             ))}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 };

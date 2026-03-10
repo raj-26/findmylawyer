@@ -9,8 +9,8 @@ export const Card = React.forwardRef(
       <div
         ref={ref}
         className={`
-          bg-white rounded-xl px-6 py-6 shadow-sm border border-primary-100
-          ${hover ? 'transition-all duration-200 hover:shadow-md hover:border-primary-200 cursor-pointer' : ''}
+          bg-white/95 backdrop-blur-[2px] rounded-2xl px-5 py-5 shadow-[0_8px_24px_rgba(15,23,42,0.04)] border border-slate-200/90
+          ${hover ? 'transition-all duration-200 hover:shadow-[0_12px_30px_rgba(15,23,42,0.08)] hover:border-slate-300 cursor-pointer' : ''}
           ${className}
         `}
         {...props}

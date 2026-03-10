@@ -65,7 +65,11 @@ const App = () => {
   return (
     <AuthProvider>
       <BookingProvider>
-        <MainLayout>
+        <MainLayout
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+        >
           {renderPage()}
         </MainLayout>
       </BookingProvider>

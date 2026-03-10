@@ -16,7 +16,7 @@ export const Input = React.forwardRef(
         <input
           ref={ref}
           className={`
-            w-full px-4 py-2.5 rounded-lg border-2 border-primary-200 
+            w-full px-3 py-2 rounded-lg border-2 border-primary-200 
             bg-white text-primary-900 placeholder-primary-400
             transition-all duration-200
             focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-5
@@ -54,7 +54,7 @@ export const Textarea = React.forwardRef(
           ref={ref}
           rows={rows}
           className={`
-            w-full px-4 py-2.5 rounded-lg border-2 border-primary-200 
+            w-full px-3 py-2 rounded-lg border-2 border-primary-200 
             bg-white text-primary-900 placeholder-primary-400
             transition-all duration-200 resize-none
             focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-5
@@ -91,7 +91,7 @@ export const Select = React.forwardRef(
         <select
           ref={ref}
           className={`
-            w-full px-4 py-2.5 rounded-lg border-2 border-primary-200 
+            w-full px-3 py-2 rounded-lg border-2 border-primary-200 
             bg-white text-primary-900
             transition-all duration-200
             focus:outline-none focus:border-primary-800 focus:ring-2 focus:ring-primary-800 focus:ring-opacity-5

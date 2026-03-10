@@ -63,12 +63,11 @@ export const PaymentsPage = ({ onNavigate }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div>
       <PageHeader
-        title="Payment Records"
-        subtitle="Track your earnings and manage payment history"
-        showBack={true}
-        onBack={() => onNavigate('dashboard')}
+        title="Earnings"
+        subtitle="Revenue overview and transaction history"
+        showBack={false}
         rightAction={
           <Button variant="secondary">
             <Download size={16} className="mr-2" />
@@ -77,7 +76,7 @@ export const PaymentsPage = ({ onNavigate }) => {
         }
       />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+      <div>
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
@@ -159,7 +158,7 @@ export const PaymentsPage = ({ onNavigate }) => {
             </table>
           </div>
         </Card>
-      </main>
+      </div>
 
       {/* Payment Details Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Payment Details">

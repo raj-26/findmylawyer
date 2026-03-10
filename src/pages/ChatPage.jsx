@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Phone, Video, Info, Paperclip, Search } from 'lucide-react';
+import { Phone, Video, Paperclip, Search } from 'lucide-react';
 import { Card, Input, Button, Avatar, AvatarFallback, AvatarImage } from '../ui';
 import { PageHeader } from '../components/PageHeader';
 
@@ -44,16 +44,16 @@ const MessageBubble = ({ message, isOwn }) => (
 
 export const ChatPage = ({ onNavigate, navState }) => {
   const [chats] = useState([
-    { id: 1, name: 'Rajesh Kumar', avatar: '', lastMessage: 'Thank you for the guidance!', time: '10:45 AM', active: true },
-    { id: 2, name: 'Priya Patel', avatar: '', lastMessage: 'Okay, I will send the documents.', time: 'Yesterday', active: false },
-    { id: 3, name: 'Amit Singh', avatar: '', lastMessage: 'Can we reschedule?', time: '3d ago', active: false },
+    { id: 1, name: 'Priya Patel', avatar: '', lastMessage: 'Thanks for reviewing the contract.', time: '10:24 AM', active: true },
+    { id: 2, name: 'Amit Singh', avatar: '', lastMessage: 'When can we schedule the call?', time: 'Yesterday', active: false },
+    { id: 3, name: 'Rajesh Kumar', avatar: '', lastMessage: 'I have uploaded the documents.', time: 'Mar 3', active: false },
   ]);
   const [activeChat, setActiveChat] = useState(chats[0]);
   const [messages, setMessages] = useState([
-    { id: 1, sender: 'client', text: 'Hello, I have a question about my case', timestamp: new Date(Date.now() - 10 * 60 * 1000) },
-    { id: 2, sender: 'lawyer', text: 'Hi! Sure, what would you like to know?', timestamp: new Date(Date.now() - 9 * 60 * 1000) },
-    { id: 3, sender: 'client', text: 'What are the next steps in my case?', timestamp: new Date(Date.now() - 8 * 60 * 1000) },
-    { id: 4, sender: 'lawyer', text: 'Based on the documents, we should file a petition next week.', timestamp: new Date(Date.now() - 7 * 60 * 1000) },
+    { id: 1, sender: 'client', text: 'Hello, I have uploaded all the property documents you requested.', timestamp: new Date(Date.now() - 10 * 60 * 1000) },
+    { id: 2, sender: 'lawyer', text: 'Thank you Priya. I will review them before our session tomorrow.', timestamp: new Date(Date.now() - 9 * 60 * 1000) },
+    { id: 3, sender: 'client', text: 'The contract also needs a clause about IP ownership.', timestamp: new Date(Date.now() - 8 * 60 * 1000) },
+    { id: 4, sender: 'client', text: 'Thanks for reviewing the contract.', timestamp: new Date(Date.now() - 7 * 60 * 1000) },
   ]);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
@@ -80,17 +80,16 @@ export const ChatPage = ({ onNavigate, navState }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div>
       <PageHeader
-        title="Client Conversations"
-        subtitle="Real-time chat with your clients"
-        showBack={true}
-        onBack={() => onNavigate('dashboard')}
+        title="Messages"
+        subtitle="Secure attorney-client communications"
+        showBack={false}
       />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-200px)]">
+      <div>
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 min-h-[70vh]">
           {/* Chat List */}
-          <Card className="lg:col-span-1 flex flex-col">
+          <Card className="xl:col-span-4 flex flex-col p-0">
             <div className="p-4 border-b">
               <div className="relative">
                 <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400" />
@@ -105,7 +104,7 @@ export const ChatPage = ({ onNavigate, navState }) => {
           </Card>
 
           {/* Chat Window */}
-          <Card className="lg:col-span-3 flex flex-col">
+          <Card className="xl:col-span-8 flex flex-col p-0">
             <div className="p-4 border-b flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Avatar>
@@ -121,9 +120,9 @@ export const ChatPage = ({ onNavigate, navState }) => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="ghost" size="icon"><Phone size={20} /></Button>
-                <Button variant="ghost" size="icon"><Video size={20} /></Button>
-                <Button variant="ghost" size="icon"><Info size={20} /></Button>
+                <Button variant="secondary" size="sm"><Phone size={16} className="mr-1" /> Call</Button>
+                <Button variant="secondary" size="sm"><Video size={16} className="mr-1" /> Video</Button>
+                <Button variant="secondary" size="sm">AI Assist</Button>
               </div>
             </div>
 
@@ -138,18 +137,18 @@ export const ChatPage = ({ onNavigate, navState }) => {
               <div className="flex items-center gap-2">
                 <Input
                   placeholder="Type a message..."
-                  className="flex-1 bg-gray-100 border-none focus:ring-primary-500"
+                  className="flex-1"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                 />
                 <Button variant="ghost" size="icon"><Paperclip size={20} /></Button>
-                <Button onClick={handleSendMessage}><Send size={18} /></Button>
+                <Button onClick={handleSendMessage}>Send</Button>
               </div>
             </div>
           </Card>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

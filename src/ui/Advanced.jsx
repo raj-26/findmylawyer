@@ -67,7 +67,7 @@ export const Alert = ({ type = 'info', title, message, onClose, className = '' }
       bg: 'bg-emerald-50',
       border: 'border-l-4 border-emerald-600',
       text: 'text-emerald-900',
-      icon: '✓',
+      icon: 'OK',
     },
     warning: {
       bg: 'bg-amber-50',
@@ -79,7 +79,7 @@ export const Alert = ({ type = 'info', title, message, onClose, className = '' }
       bg: 'bg-red-50',
       border: 'border-l-4 border-red-600',
       text: 'text-red-900',
-      icon: '✕',
+      icon: 'ERR',
     },
   };
 
@@ -98,7 +98,7 @@ export const Alert = ({ type = 'info', title, message, onClose, className = '' }
             onClick={onClose}
             className={`ml-4 font-bold ${typeConfig.text} hover:opacity-70`}
           >
-            ✕
+            X
           </button>
         )}
       </div>

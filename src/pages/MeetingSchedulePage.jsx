@@ -79,15 +79,20 @@ export const MeetingSchedulePage = ({ onNavigate }) => {
   const meetingStatuses = getMeetingStatusCounts();
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div>
       <PageHeader
-        title="Meeting Schedule"
-        subtitle="View and manage your upcoming consultations"
-        showBack={true}
-        onBack={() => onNavigate('dashboard')}
+        title="Schedule & Availability"
+        subtitle="Manage your appointments and control when clients can book you"
+        showBack={false}
+        rightAction={
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm">Client Preview</Button>
+            <Button size="sm">+ Block Time</Button>
+          </div>
+        }
       />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+      <div>
         {/* Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
@@ -125,7 +130,6 @@ export const MeetingSchedulePage = ({ onNavigate }) => {
           </Card>
         </div>
 
-        {/* View Mode Toggle */}
         <div className="flex gap-2 mb-6">
           <Button
             onClick={() => setViewMode('list')}
@@ -143,7 +147,6 @@ export const MeetingSchedulePage = ({ onNavigate }) => {
           </Button>
         </div>
 
-        {/* Meetings List */}
         <div className="space-y-6">
           {scheduledMeetings.length > 0 ? (
             <>
@@ -203,7 +206,7 @@ export const MeetingSchedulePage = ({ onNavigate }) => {
             </Card>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 };

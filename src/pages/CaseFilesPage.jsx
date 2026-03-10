@@ -1,253 +1,52 @@
-import React, { useRef, useState } from 'react';
-import { FileText, Upload, Download, Trash2, Eye, Search, Folder, File, HardDrive } from 'lucide-react';
-import { Card, CardHeader, CardTitle, Button, Input, Avatar, AvatarImage, AvatarFallback } from '../ui';
+import React from 'react';
+import { Card } from '../ui';
 import { PageHeader } from '../components/PageHeader';
-import { useAuth } from '../context/AuthContext';
 
 export const CaseFilesPage = ({ onNavigate }) => {
-  const { user } = useAuth();
-  const [files, setFiles] = useState([
-    {
-      id: 1,
-      name: 'Property Deed - Final.pdf',
-      size: '2.4 MB',
-      uploadedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      type: 'PDF',
-      category: 'Evidence',
-    },
-    {
-      id: 2,
-      name: 'Statement of Witness.docx',
-      size: '1.2 MB',
-      uploadedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      type: 'DOCX',
-      category: 'Statements',
-    },
-    {
-      id: 3,
-      name: 'Court Notice - March 2026.pdf',
-      size: '856 KB',
-      uploadedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-      type: 'PDF',
-      category: 'Court Documents',
-    },
-  ]);
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef(null);
-
-  const categories = ['all', 'Evidence', 'Statements', 'Court Documents', 'Agreements'];
-
-  const filteredFiles = files.filter((file) => {
-    const matchesSearch = file.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || file.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const formatFileSize = (bytes) => {
-    if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;
-    return `${bytes} B`;
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileUpload = (e) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    if (selectedFiles.length === 0) return;
-
-    setIsUploading(true);
-
-    setTimeout(() => {
-      const newFiles = selectedFiles.map((file, index) => ({
-        id: Date.now() + index,
-        name: file.name,
-        size: formatFileSize(file.size),
-        uploadedAt: new Date(),
-        type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
-        category: 'Evidence',
-      }));
-      setFiles((prev) => [...newFiles, ...prev]);
-      setIsUploading(false);
-      e.target.value = '';
-    }, 1500);
-  };
-
-  const handleDeleteFile = (fileId) => {
-    setFiles(files.filter((f) => f.id !== fileId));
-  };
-
-  const totalStorageUsed = files.reduce((acc, file) => {
-    const size = parseFloat(file.size);
-    const unit = file.size.split(' ')[1];
-    if (unit === 'MB') return acc + size;
-    if (unit === 'KB') return acc + size / 1024;
-    return acc;
-  }, 0).toFixed(1);
+  const caseCards = [
+    { id: 'C001', name: 'Priya Patel', type: 'Corporate Law', stage: 'Discovery', next: 'Mar 12, 2026', priority: 'high priority', docs: 7, tasks: 3 },
+    { id: 'C002', name: 'Amit Singh', type: 'Property Law', stage: 'Filing', next: 'Mar 19, 2026', priority: 'medium priority', docs: 12, tasks: 1 },
+    { id: 'C003', name: 'Suresh Joshi', type: 'Labour Law', stage: 'Closed', next: '—', priority: 'low priority', docs: 5, tasks: 0 },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div>
       <PageHeader
-        title="Case File Management"
-        subtitle="Organize and manage all your case documents"
-        showBack={true}
-        onBack={() => onNavigate('dashboard')}
+        title="Cases"
+        subtitle="Manage your active and closed cases"
+        showBack={false}
         rightAction={
-          <div className="flex items-center gap-3">
-            <Avatar className="w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] aspect-square border border-white/20">
-              <AvatarImage src={user.avatarUrl} />
-              <AvatarFallback>{user.name?.[0] || 'U'}</AvatarFallback>
-            </Avatar>
-            <Button onClick={handleUploadClick} loading={isUploading}>
-              <Upload size={16} className="mr-2" />
-              {isUploading ? 'Uploading...' : 'Upload File'}
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-          </div>
+          <button className="px-5 py-2.5 rounded-xl bg-[#071b33] text-white font-semibold">+ New Case</button>
         }
       />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <div className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                <File size={24} className="text-blue-600" />
+      <div className="space-y-4">
+        {caseCards.map((item) => (
+          <Card key={item.id} className="p-0">
+            <div className="p-6">
+              <div className="flex flex-wrap items-center gap-3 mb-3">
+                <h3 className="text-3xl font-bold">{item.name}</h3>
+                <span className="px-3 py-1 rounded-lg bg-slate-100 text-slate-500 text-sm">{item.id}</span>
+                <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-sm">{item.priority}</span>
               </div>
-              <div>
-                <p className="text-sm text-primary-600">Total Files</p>
-                <p className="text-2xl font-bold text-primary-900">{files.length}</p>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Folder size={24} className="text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-primary-600">Categories</p>
-                <p className="text-2xl font-bold text-primary-900">{categories.length - 1}</p>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <HardDrive size={24} className="text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm text-primary-600">Storage Used</p>
-                <p className="text-2xl font-bold text-primary-900">{totalStorageUsed} MB</p>
-              </div>
-            </div>
-          </Card>
-        </div>
+              <p className="text-slate-600 mb-4">{item.type} · Stage: <span className="font-semibold">{item.stage}</span> · Next: {item.next}</p>
 
-        {/* Filters and Search */}
-        <Card className="mb-8">
-          <div className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400" />
-                <Input
-                  placeholder="Search files by name..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+              <div className="mb-4">
+                <div className="h-2 rounded-full bg-slate-100 relative">
+                  <div className="absolute left-0 top-0 h-2 rounded-full bg-blue-500" style={{ width: item.stage === 'Discovery' ? '45%' : item.stage === 'Filing' ? '20%' : '100%' }} />
+                </div>
               </div>
-              <div className="flex items-center gap-2 overflow-x-auto pb-2">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    variant={selectedCategory === category ? 'primary' : 'secondary'}
-                    size="sm"
-                    className="whitespace-nowrap"
-                  >
-                    {category === 'all' ? 'All Files' : category}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
 
-        {/* Files List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Files ({filteredFiles.length})</CardTitle>
-          </CardHeader>
-          {filteredFiles.length === 0 ? (
-            <div className="text-center py-16">
-              <FileText size={48} className="mx-auto text-primary-300 mb-4" />
-              <h3 className="text-lg font-bold text-primary-900">No Files Found</h3>
-              <p className="text-primary-600">Try adjusting your search or filter.</p>
+              <div className="flex flex-wrap gap-2">
+                <button className="px-5 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-semibold">AI Prep</button>
+                <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">📄 {item.docs} Documents</button>
+                <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">{item.tasks} Tasks</button>
+                <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">View Full Case</button>
+              </div>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="text-left py-3 px-4 font-semibold text-primary-700">File Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-primary-700">Category</th>
-                    <th className="text-left py-3 px-4 font-semibold text-primary-700">Size</th>
-                    <th className="text-left py-3 px-4 font-semibold text-primary-700">Uploaded</th>
-                    <th className="text-right py-3 px-4 font-semibold text-primary-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredFiles.map((file) => (
-                    <tr key={file.id} className="hover:bg-gray-50">
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-3">
-                          <FileText size={20} className="text-primary-500" />
-                          <span className="font-medium text-primary-900">{file.name}</span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-primary-600">{file.category}</td>
-                      <td className="py-3 px-4 text-primary-600">{file.size}</td>
-                      <td className="py-3 px-4 text-primary-600">
-                        {file.uploadedAt.toLocaleDateString()}
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex gap-1 justify-end">
-                          <Button variant="ghost" size="icon">
-                            <Eye size={16} />
-                          </Button>
-                          <Button variant="ghost" size="icon">
-                            <Download size={16} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteFile(file.id)}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-      </main>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };
