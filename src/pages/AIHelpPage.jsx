@@ -1,7 +1,7 @@
 import React from 'react';
 import { PageHeader } from '../components/PageHeader';
 
-export const AIHelpPage = ({ onNavigate }) => {
+export const AIHelpPage = () => {
   const starterPrompts = [
     'Summarise my top-risk active cases this week',
     'Create a hearing prep checklist for property disputes',
@@ -41,18 +41,12 @@ export const AIHelpPage = ({ onNavigate }) => {
               <textarea
                 rows={2}
                 placeholder="Message AI Intelligence"
-                className="flex-1 resize-none border-0 focus:ring-0 outline-none text-slate-700 placeholder:text-slate-400"
+                className="flex-1 resize-none border-0 outline-none focus:outline-none focus:ring-0 focus-visible:outline-none text-slate-700 placeholder:text-slate-400"
               />
               <button className="px-5 py-2.5 rounded-xl bg-[#071b33] text-white font-semibold">Search</button>
             </div>
-            <div className="pt-3 px-1 flex items-center justify-between text-xs text-slate-500">
+            <div className="pt-3 px-1 text-xs text-slate-500">
               <p>Use case names, hearing dates, or document IDs for sharper answers.</p>
-              <button
-                onClick={() => onNavigate('cases')}
-                className="font-semibold text-slate-700 hover:text-slate-900"
-              >
-                Open Cases
-              </button>
             </div>
           </div>
         </div>

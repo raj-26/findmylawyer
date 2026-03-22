@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, TrendingUp, DollarSign, Eye, MoreVertical, Clock } from 'lucide-react';
+import { Download, TrendingUp, IndianRupee, Eye, MoreVertical, Clock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, Button, Badge, Modal } from '../ui';
 import { PageHeader } from '../components/PageHeader';
 import { formatCurrency, formatDate } from '../utils';
@@ -82,7 +82,7 @@ export const PaymentsPage = ({ onNavigate }) => {
           <Card>
             <div className="p-6 flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <DollarSign size={24} className="text-emerald-600" />
+                <IndianRupee size={24} className="text-emerald-600" />
               </div>
               <div>
                 <p className="text-sm text-primary-600">Total Earnings</p>

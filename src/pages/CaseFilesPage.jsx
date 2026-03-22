@@ -1,8 +1,9 @@
 import React from 'react';
 import { Card } from '../ui';
 import { PageHeader } from '../components/PageHeader';
+import { AICaseIntelligencePage } from './AICaseIntelligencePage';
 
-export const CaseFilesPage = ({ onNavigate }) => {
+export const CaseFilesPage = ({ onNavigate, navState }) => {
   const caseCards = [
     {
       id: 'C001',
@@ -42,6 +43,10 @@ export const CaseFilesPage = ({ onNavigate }) => {
     },
   ];
 
+  if (navState?.caseData) {
+    return <AICaseIntelligencePage onNavigate={onNavigate} navState={navState} />;
+  }
+
   return (
     <div>
       <PageHeader
@@ -49,7 +54,12 @@ export const CaseFilesPage = ({ onNavigate }) => {
         subtitle="Manage your active and closed cases"
         showBack={false}
         rightAction={
-          <button className="px-5 py-2.5 rounded-xl bg-[#071b33] text-white font-semibold">+ New Case</button>
+          <button
+            onClick={() => onNavigate('bookings')}
+            className="px-5 py-2.5 rounded-xl bg-[#071b33] text-white font-semibold"
+          >
+            + New Case
+          </button>
         }
       />
 
@@ -74,7 +84,7 @@ export const CaseFilesPage = ({ onNavigate }) => {
                 <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">📄 {item.docs} Documents</button>
                 <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">{item.tasks} Tasks</button>
                 <button
-                  onClick={() => onNavigate('ai-case-intelligence', { caseData: item })}
+                  onClick={() => onNavigate('cases', { caseData: item })}
                   className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700"
                 >
                   View Full Case

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Card } from '../ui';
 import { PageHeader } from '../components/PageHeader';
 
@@ -172,6 +172,63 @@ const buildReply = (option, intelligence) => {
   return `I can help with Brief, Checklist, Documents, Insights, and Drafts for ${intelligence.status.toLowerCase()}. Try one of the quick options above.`;
 };
 
+const buildAssistantResponse = (option, intelligence) => {
+  const normalized = option.trim().toLowerCase();
+
+  if (normalized.includes('brief')) {
+    return {
+      type: 'brief',
+      title: 'Case Brief',
+      content: intelligence.summary,
+    };
+  }
+
+  if (normalized.includes('checklist')) {
+    return {
+      type: 'checklist',
+      title: 'Intake Checklist',
+      content: intelligence.checklist,
+    };
+  }
+
+  if (normalized.includes('document')) {
+    return {
+      type: 'documents',
+      title: 'Client Documents',
+      content: intelligence.documents,
+    };
+  }
+
+  if (normalized.includes('insight')) {
+    return {
+      type: 'insights',
+      title: 'Key Insights',
+      content: intelligence.insights,
+    };
+  }
+
+  if (normalized.includes('ai intelligence')) {
+    return {
+      type: 'insights',
+      title: 'AI Intelligence',
+      content: intelligence.insights,
+    };
+  }
+
+  if (normalized.includes('draft')) {
+    return {
+      type: 'drafts',
+      title: 'Draft Suggestions',
+      content: intelligence.drafts,
+    };
+  }
+
+  return {
+    type: 'text',
+    content: buildReply(option, intelligence),
+  };
+};
+
 export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
   const caseData = navState?.caseData || DEFAULT_CASE;
 
@@ -179,26 +236,161 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
     return CASE_INTELLIGENCE[caseData.id] || DEFAULT_INTELLIGENCE;
   }, [caseData.id]);
 
+  const fileInputRef = useRef(null);
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState([
-    {
-      id: 1,
-      role: 'assistant',
-      text: `Hi, I am your AI Case Assistant for ${caseData.name}. Choose an option below or ask a custom question.`,
-    },
-  ]);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [caseDocuments, setCaseDocuments] = useState(intelligence.documents);
+  const [decision, setDecision] = useState(null);
+
+  useEffect(() => {
+    setCaseDocuments(intelligence.documents);
+    setChatMessages([]);
+    setDecision(null);
+  }, [caseData.id, intelligence.documents]);
 
   const pushConversation = (promptText) => {
     const cleaned = promptText.trim();
     if (!cleaned) return;
 
-    const reply = buildReply(cleaned, intelligence);
+    const reply = buildAssistantResponse(cleaned, intelligence);
     setChatMessages((prev) => [
       ...prev,
-      { id: Date.now(), role: 'user', text: cleaned },
-      { id: Date.now() + 1, role: 'assistant', text: reply },
+      { id: Date.now(), role: 'user', type: 'text', text: cleaned },
+      { id: Date.now() + 1, role: 'assistant', ...reply },
     ]);
     setChatInput('');
+  };
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleDocumentUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCaseDocuments((prev) => {
+      if (prev.includes(file.name)) return prev;
+      return [...prev, file.name];
+    });
+
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        role: 'assistant',
+        type: 'text',
+        content: `${file.name} uploaded successfully. I have added it to client documents.`,
+      },
+    ]);
+
+    e.target.value = '';
+  };
+
+  const renderAssistantCard = (message) => {
+    if (message.type === 'brief') {
+      return (
+        <div className="bg-white border border-slate-200 rounded-xl p-3">
+          <p className="text-xs uppercase tracking-wide text-slate-500 font-bold mb-2">{message.title}</p>
+          <p className="text-sm leading-6 text-slate-700">{message.content}</p>
+        </div>
+      );
+    }
+
+    if (message.type === 'checklist') {
+      return (
+        <div className="bg-white border border-slate-200 rounded-xl p-3">
+          <p className="text-xs uppercase tracking-wide text-slate-500 font-bold mb-2">{message.title}</p>
+          <div className="space-y-2">
+            {message.content.map((line, idx) => (
+              <div key={line} className="flex items-start justify-between gap-3 text-sm border-b border-slate-100 pb-2 last:border-0 last:pb-0">
+                <p className="text-slate-700">{line}</p>
+                <span className={idx === 4 ? 'text-amber-600 text-xs font-semibold' : 'text-emerald-600 text-xs font-semibold'}>
+                  {idx === 4 ? 'Follow up' : 'Done'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (message.type === 'documents') {
+      return (
+        <div className="bg-white border border-slate-200 rounded-xl p-3">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <p className="text-xs uppercase tracking-wide text-slate-500 font-bold">{message.title}</p>
+            <button
+              onClick={handleUploadClick}
+              className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold"
+            >
+              Upload
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={handleDocumentUpload}
+            />
+          </div>
+
+          <div className="space-y-2">
+            {caseDocuments.map((doc) => (
+              <div key={doc} className="flex items-center justify-between border border-slate-200 rounded-lg p-2 text-sm">
+                <p className="text-slate-700 truncate">{doc}</p>
+                <div className="flex gap-2 shrink-0">
+                  <button className="px-2 py-1 text-xs rounded-md border border-slate-300">View</button>
+                  <button className="px-2 py-1 text-xs rounded-md bg-blue-50 text-blue-700">AI Read</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (message.type === 'insights') {
+      return (
+        <div className="space-y-2">
+          {message.content.map((item) => (
+            <div key={item.title} className="bg-white border border-slate-200 rounded-xl p-3">
+              <div className="flex items-center justify-between mb-1">
+                <p className="font-semibold text-slate-800 text-sm">{item.title}</p>
+                <span className="text-xs text-red-500 font-semibold">{item.priority}</span>
+              </div>
+              <p className="text-sm text-slate-600">{item.text}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (message.type === 'drafts') {
+      return (
+        <div className="space-y-2">
+          {message.content.map((draft, idx) => (
+            <div key={draft} className="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2">
+              <div>
+                <p className="font-semibold text-slate-800 text-sm">{draft}</p>
+                <p className="text-xs text-slate-500">{idx === 1 ? 'Needs review' : 'Auto-generated'}</p>
+              </div>
+              <div className="flex gap-2">
+                <button className="px-2 py-1 text-xs rounded-md border border-slate-300">Preview</button>
+                <button className="px-2 py-1 text-xs rounded-md bg-[#071b33] text-white">Edit</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="bg-white border border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-sm leading-6 whitespace-pre-line">
+        {message.content}
+      </div>
+    );
   };
 
   return (
@@ -223,10 +415,29 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
                 {intelligence.status}
                 <p className="text-sm text-emerald-700 mt-1">{intelligence.statusMeta}</p>
               </div>
-              <div className="mt-4 flex gap-2">
-                <button className="flex-1 py-3 rounded-xl bg-emerald-500 text-white font-semibold">Accept</button>
-                <button className="flex-1 py-3 rounded-xl border border-slate-300 text-slate-500 font-semibold">Decline</button>
-              </div>
+
+              {!decision && (
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={() => setDecision('accepted')}
+                    className="flex-1 py-3 rounded-xl bg-emerald-500 text-white font-semibold"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={() => onNavigate('cases')}
+                    className="flex-1 py-3 rounded-xl border border-slate-300 text-slate-500 font-semibold"
+                  >
+                    Decline
+                  </button>
+                </div>
+              )}
+
+              {decision === 'accepted' && (
+                <div className="mt-4 py-2.5 px-3 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-700 text-sm font-semibold text-center">
+                  Client Accepted
+                </div>
+              )}
             </div>
           </Card>
 
@@ -241,43 +452,66 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
               </div>
             </div>
           </Card>
+
+          <Card className="p-0">
+            <div className="p-5">
+              <p className="text-xs uppercase tracking-wide text-slate-500 font-bold mb-3">Quick Actions</p>
+              <div className="space-y-2">
+                {[
+                  { label: 'Documents', onClick: () => pushConversation('Documents') },
+                  { label: 'AI Intelligence', onClick: () => onNavigate('ai-help') },
+                  { label: 'Drafts', onClick: () => pushConversation('Drafts') },
+                ].map((action) => (
+                  <button
+                    key={action.label}
+                    onClick={action.onClick}
+                    className="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-left font-semibold text-slate-700 hover:bg-slate-50"
+                  >
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </Card>
         </div>
 
-        <Card className="xl:col-span-8 p-0 flex flex-col min-h-[640px]">
+        <Card className="xl:col-span-8 p-0 flex flex-col min-h-[560px]">
           <div className="p-5 border-b border-slate-200">
             <p className="text-sm font-semibold text-slate-800">AI Case Chatbot</p>
             <p className="text-xs text-slate-500 mt-1">Ask questions or tap quick actions, just like a real chat assistant.</p>
           </div>
 
-          <div className="p-5 border-b border-slate-200">
-            <div className="flex flex-wrap gap-2">
+          <div className="flex-1 p-5 bg-slate-50 overflow-y-auto space-y-4">
+            <div className="flex justify-start">
+              <div className="max-w-[72%] bg-white border border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-sm leading-6">
+                Hi, I am your AI Case Assistant for {caseData.name}. Choose an option below or ask a custom question.
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 pl-1">
               {QUICK_OPTIONS.map((option) => (
                 <button
                   key={option}
                   onClick={() => pushConversation(option)}
-                  className="px-4 py-2 rounded-full border border-slate-300 bg-white text-slate-700 text-sm font-semibold hover:bg-slate-50"
+                  className="px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50"
                 >
                   {option}
                 </button>
               ))}
             </div>
-          </div>
 
-          <div className="flex-1 p-5 bg-slate-50 overflow-y-auto space-y-4">
             {chatMessages.map((message) => {
               const isUser = message.role === 'user';
 
               return (
                 <div key={message.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                  <div
-                    className={`max-w-[85%] whitespace-pre-line px-4 py-3 rounded-2xl text-sm leading-6 ${
-                      isUser
-                        ? 'bg-[#071b33] text-white rounded-br-md'
-                        : 'bg-white border border-slate-200 text-slate-700 rounded-bl-md'
-                    }`}
-                  >
-                    {message.text}
-                  </div>
+                  {isUser ? (
+                    <div className="max-w-[72%] whitespace-pre-line px-4 py-2 rounded-2xl text-sm leading-6 bg-[#071b33] text-white rounded-br-md">
+                      {message.text}
+                    </div>
+                  ) : (
+                    <div className="max-w-[82%]">{renderAssistantCard(message)}</div>
+                  )}
                 </div>
               );
             })}
