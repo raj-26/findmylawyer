@@ -15,6 +15,7 @@ import { DemandDraftPage } from './pages/DemandDraftPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
 import { LawyerLoginPage } from './pages/LawyerLoginPage';
+import { ClientRegisterPage } from './pages/ClientRegisterPage';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('login');
@@ -67,7 +68,15 @@ const App = () => {
     <AuthProvider>
       <BookingProvider>
         {currentPage === 'login' ? (
-          <LawyerLoginPage onLogin={() => handleNavigate('dashboard')} />
+          <LawyerLoginPage
+            onLogin={() => handleNavigate('dashboard')}
+            onOpenRegister={() => handleNavigate('register-client')}
+          />
+        ) : currentPage === 'register-client' ? (
+          <ClientRegisterPage
+            onBackToLogin={() => handleNavigate('login')}
+            onRegisterSuccess={() => handleNavigate('dashboard')}
+          />
         ) : (
           <MainLayout
             currentPage={currentPage}
