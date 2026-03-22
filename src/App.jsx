@@ -14,9 +14,10 @@ import { AIHelpPage } from './pages/AIHelpPage';
 import { DemandDraftPage } from './pages/DemandDraftPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
+import { LawyerLoginPage } from './pages/LawyerLoginPage';
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [currentPage, setCurrentPage] = useState('login');
   const [navigationState, setNavigationState] = useState(null);
 
   const handleNavigate = (page, state = null) => {
@@ -65,13 +66,17 @@ const App = () => {
   return (
     <AuthProvider>
       <BookingProvider>
-        <MainLayout
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-        >
-          {renderPage()}
-        </MainLayout>
+        {currentPage === 'login' ? (
+          <LawyerLoginPage onLogin={() => handleNavigate('dashboard')} />
+        ) : (
+          <MainLayout
+            currentPage={currentPage}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          >
+            {renderPage()}
+          </MainLayout>
+        )}
       </BookingProvider>
     </AuthProvider>
   );
