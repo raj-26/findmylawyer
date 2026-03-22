@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Phone, Video, Paperclip, Search } from 'lucide-react';
+import { Lock, Phone, Paperclip, Search } from 'lucide-react';
 import { Card, Input, Button, Avatar, AvatarFallback, AvatarImage } from '../ui';
 import { PageHeader } from '../components/PageHeader';
 
@@ -121,8 +121,10 @@ export const ChatPage = ({ onNavigate, navState }) => {
               </div>
               <div className="flex gap-2">
                 <Button variant="secondary" size="sm"><Phone size={16} className="mr-1" /> Call</Button>
-                <Button variant="secondary" size="sm"><Video size={16} className="mr-1" /> Video</Button>
-                <Button variant="secondary" size="sm">AI Assist</Button>
+                <div className="px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-xs sm:text-sm font-semibold text-slate-600 flex items-center gap-1.5">
+                  <Lock size={14} />
+                  End-to-End Encryption
+                </div>
               </div>
             </div>
 

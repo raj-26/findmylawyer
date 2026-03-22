@@ -4,9 +4,42 @@ import { PageHeader } from '../components/PageHeader';
 
 export const CaseFilesPage = ({ onNavigate }) => {
   const caseCards = [
-    { id: 'C001', name: 'Priya Patel', type: 'Corporate Law', stage: 'Discovery', next: 'Mar 12, 2026', priority: 'high priority', docs: 7, tasks: 3 },
-    { id: 'C002', name: 'Amit Singh', type: 'Property Law', stage: 'Filing', next: 'Mar 19, 2026', priority: 'medium priority', docs: 12, tasks: 1 },
-    { id: 'C003', name: 'Suresh Joshi', type: 'Labour Law', stage: 'Closed', next: '—', priority: 'low priority', docs: 5, tasks: 0 },
+    {
+      id: 'C001',
+      name: 'Priya Patel',
+      type: 'Corporate Law',
+      stage: 'Discovery',
+      next: 'Mar 12, 2026',
+      priority: 'high priority',
+      docs: 7,
+      tasks: 3,
+      location: 'Bangalore, Karnataka',
+      summary: 'Partnership contract conflict with clause-level dispute over liability distribution.',
+    },
+    {
+      id: 'C002',
+      name: 'Amit Singh',
+      type: 'Property Law',
+      stage: 'Filing',
+      next: 'Mar 19, 2026',
+      priority: 'medium priority',
+      docs: 12,
+      tasks: 1,
+      location: 'Delhi, Delhi',
+      summary: 'Residential title dispute involving ownership transfer and registry discrepancy.',
+    },
+    {
+      id: 'C003',
+      name: 'Suresh Joshi',
+      type: 'Labour Law',
+      stage: 'Closed',
+      next: '—',
+      priority: 'low priority',
+      docs: 5,
+      tasks: 0,
+      location: 'Pune, Maharashtra',
+      summary: 'Workplace termination claim resolved through negotiated settlement terms.',
+    },
   ];
 
   return (
@@ -38,10 +71,14 @@ export const CaseFilesPage = ({ onNavigate }) => {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <button className="px-5 py-2.5 rounded-xl bg-blue-50 text-blue-700 font-semibold">AI Prep</button>
                 <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">📄 {item.docs} Documents</button>
                 <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">{item.tasks} Tasks</button>
-                <button className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700">View Full Case</button>
+                <button
+                  onClick={() => onNavigate('ai-case-intelligence', { caseData: item })}
+                  className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700"
+                >
+                  View Full Case
+                </button>
               </div>
             </div>
           </Card>

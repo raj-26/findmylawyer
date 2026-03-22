@@ -11,6 +11,7 @@ import { CaseFilesPage } from './pages/CaseFilesPage';
 import { PaymentsPage } from './pages/PaymentsPage';
 import { ChatPage } from './pages/ChatPage';
 import { AIHelpPage } from './pages/AIHelpPage';
+import { AICaseIntelligencePage } from './pages/AICaseIntelligencePage';
 import { DemandDraftPage } from './pages/DemandDraftPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
@@ -51,6 +52,8 @@ const App = () => {
         return <ChatPage {...props} />;
       case 'ai-help':
         return <AIHelpPage {...props} />;
+      case 'ai-case-intelligence':
+        return <AICaseIntelligencePage {...props} />;
       case 'demand-draft':
         return <DemandDraftPage {...props} />;
       case 'settings':

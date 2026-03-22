@@ -1,15 +1,15 @@
 import React from 'react';
 import {
   Bell,
-  BookOpen,
+  BellRing,
   Bot,
   Briefcase,
   Calendar,
   DollarSign,
-  FileText,
   Folder,
   LayoutDashboard,
   MessageCircle,
+  Newspaper,
   Settings,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -22,8 +22,8 @@ const navItems = [
   { id: 'chat', label: 'Chat', icon: MessageCircle, badge: 3 },
   { id: 'schedule', label: 'Schedule', icon: Calendar },
   { id: 'payments', label: 'Earnings', icon: DollarSign },
-  { id: 'demand-draft', label: 'Documents', icon: FileText },
-  { id: 'subscription', label: 'Learning', icon: BookOpen },
+  { id: 'demand-draft', label: 'News', icon: Newspaper },
+  { id: 'subscription', label: 'Notification', icon: BellRing },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
