@@ -58,7 +58,7 @@ export const ClientRegisterPage = ({ onBackToLogin, onRegisterSuccess }) => {
             </div>
 
             <h2 className="text-5xl font-black text-slate-900 leading-none">Create Account</h2>
-            <p className="text-slate-500 mt-2">Join FindMyLawyer as a client</p>
+            <p className="text-slate-500 mt-2">Join FindMyLawyer as a lawyer</p>
 
             <button
               type="button"
@@ -190,9 +190,9 @@ export const ClientRegisterPage = ({ onBackToLogin, onRegisterSuccess }) => {
         </section>
       </div>
 
-      <footer className="bg-[#091a38] text-white text-center py-2 px-4">
+      <footer className="bg-[#041325] text-center py-2 px-4 border-t border-[#0a2a49]">
         <p className="text-[9px] tracking-[0.2em] uppercase text-slate-300">Know Your Legal Rights</p>
-        <p className="text-[11px] font-semibold mt-0.5">"You have the right to remain silent."</p>
+        <p className="text-[11px] font-semibold mt-0.5 text-white">"You have the right to remain silent."</p>
         <p className="text-[9px] text-slate-400 mt-0.5">© 2026 FindMyLawyer · All rights reserved</p>
       </footer>
     </div>

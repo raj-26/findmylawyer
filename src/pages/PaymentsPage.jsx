@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { format } from 'date-fns';
 import { Download, TrendingUp, IndianRupee, Eye, MoreVertical, Clock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, Button, Badge, Modal } from '../ui';
 import { PageHeader } from '../components/PageHeader';
 import { formatCurrency, formatDate } from '../utils';
 
 export const PaymentsPage = ({ onNavigate }) => {
-  const [payments] = useState([
+  const [payments, setPayments] = useState([
     {
       id: 'PAY001',
       clientName: 'Rajesh Kumar',
@@ -46,6 +47,7 @@ export const PaymentsPage = ({ onNavigate }) => {
 
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openActionMenuId, setOpenActionMenuId] = useState(null);
 
   const totalEarnings = payments
     .filter((p) => p.status === 'completed')
@@ -62,6 +64,41 @@ export const PaymentsPage = ({ onNavigate }) => {
     setIsModalOpen(true);
   };
 
+  const handleExportReport = () => {
+    const headers = ['Transaction ID', 'Client', 'Type', 'Amount', 'Date', 'Status'];
+    const rows = payments.map((payment) => [
+      payment.id,
+      payment.clientName,
+      payment.type,
+      payment.amount,
+      formatDate(payment.date, 'dd MMM, yyyy'),
+      payment.status,
+    ]);
+
+    const csv = [headers, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `earnings-report-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleMarkCompleted = (paymentId) => {
+    setPayments((prev) =>
+      prev.map((payment) =>
+        payment.id === paymentId ? { ...payment, status: 'completed' } : payment
+      )
+    );
+    setOpenActionMenuId(null);
+  };
+
   return (
     <div>
       <PageHeader
@@ -69,7 +106,7 @@ export const PaymentsPage = ({ onNavigate }) => {
         subtitle="Revenue overview and transaction history"
         showBack={false}
         rightAction={
-          <Button variant="secondary">
+          <Button variant="secondary" onClick={handleExportReport}>
             <Download size={16} className="mr-2" />
             Export Report
           </Button>
@@ -125,8 +162,8 @@ export const PaymentsPage = ({ onNavigate }) => {
                 <tr>
                   <th className="text-left py-3 px-4 font-semibold text-primary-700">Client</th>
                   <th className="text-left py-3 px-4 font-semibold text-primary-700">Amount</th>
-                  <th className="text-left py-3 px-4 font-semibold text-primary-700">Date</th>
-                  <th className="text-left py-3 px-4 font-semibold text-primary-700">Status</th>
+                  <th className="text-center py-3 px-4 font-semibold text-primary-700">Date</th>
+                  <th className="text-center py-3 px-4 font-semibold text-primary-700">Status</th>
                   <th className="text-right py-3 px-4 font-semibold text-primary-700">Actions</th>
                 </tr>
               </thead>
@@ -138,18 +175,55 @@ export const PaymentsPage = ({ onNavigate }) => {
                       <div className="text-primary-600 text-xs">{payment.type}</div>
                     </td>
                     <td className="py-3 px-4 font-medium text-primary-900">{formatCurrency(payment.amount)}</td>
-                    <td className="py-3 px-4 text-primary-600">{formatDate(payment.date, 'dd MMM, yyyy')}</td>
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 text-primary-600 text-center">{formatDate(payment.date, 'dd MMM, yyyy')}</td>
+                    <td className="py-3 px-4 text-center">
                       <Badge status={payment.status} />
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex gap-1 justify-end">
+                      <div className="flex gap-1 justify-end relative">
                         <Button variant="ghost" size="icon" onClick={() => openPaymentDetails(payment)}>
                           <Eye size={16} />
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            setOpenActionMenuId((prev) => (prev === payment.id ? null : payment.id))
+                          }
+                        >
                           <MoreVertical size={16} />
                         </Button>
+
+                        {openActionMenuId === payment.id && (
+                          <div className="absolute right-0 top-9 z-10 w-44 rounded-xl border border-slate-200 bg-white shadow-lg p-1">
+                            <button
+                              onClick={() => {
+                                openPaymentDetails(payment);
+                                setOpenActionMenuId(null);
+                              }}
+                              className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100"
+                            >
+                              View Details
+                            </button>
+                            <button
+                              onClick={() => {
+                                alert(`Invoice ${payment.id} download started`);
+                                setOpenActionMenuId(null);
+                              }}
+                              className="w-full text-left px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100"
+                            >
+                              Download Invoice
+                            </button>
+                            {payment.status === 'pending' && (
+                              <button
+                                onClick={() => handleMarkCompleted(payment.id)}
+                                className="w-full text-left px-3 py-2 rounded-lg text-sm text-emerald-700 hover:bg-emerald-50"
+                              >
+                                Mark as Completed
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>
