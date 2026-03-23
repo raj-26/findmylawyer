@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Bot, SendHorizonal, X } from 'lucide-react';
 import { Card } from '../ui';
 import { PageHeader } from '../components/PageHeader';
 
@@ -142,7 +143,12 @@ const DEFAULT_INTELLIGENCE = {
   drafts: ['No drafts loaded'],
 };
 
-const QUICK_OPTIONS = ['Brief', 'Checklist', 'Documents', 'Insights', 'Drafts'];
+const CASE_BOT_MENU = [
+  { id: 'brief', label: 'Case Brief', icon: '📂', prompt: 'Brief' },
+  { id: 'checklist', label: 'Checklist', icon: '📋', prompt: 'Checklist' },
+  { id: 'documents', label: 'Documents', icon: '📄', prompt: 'Documents' },
+  { id: 'insights', label: 'Insights', icon: '🧠', prompt: 'Insights' },
+];
 
 const buildReply = (option, intelligence) => {
   const normalized = option.trim().toLowerCase();
@@ -172,63 +178,6 @@ const buildReply = (option, intelligence) => {
   return `I can help with Brief, Checklist, Documents, Insights, and Drafts for ${intelligence.status.toLowerCase()}. Try one of the quick options above.`;
 };
 
-const buildAssistantResponse = (option, intelligence) => {
-  const normalized = option.trim().toLowerCase();
-
-  if (normalized.includes('brief')) {
-    return {
-      type: 'brief',
-      title: 'Case Brief',
-      content: intelligence.summary,
-    };
-  }
-
-  if (normalized.includes('checklist')) {
-    return {
-      type: 'checklist',
-      title: 'Intake Checklist',
-      content: intelligence.checklist,
-    };
-  }
-
-  if (normalized.includes('document')) {
-    return {
-      type: 'documents',
-      title: 'Client Documents',
-      content: intelligence.documents,
-    };
-  }
-
-  if (normalized.includes('insight')) {
-    return {
-      type: 'insights',
-      title: 'Key Insights',
-      content: intelligence.insights,
-    };
-  }
-
-  if (normalized.includes('ai intelligence')) {
-    return {
-      type: 'insights',
-      title: 'AI Intelligence',
-      content: intelligence.insights,
-    };
-  }
-
-  if (normalized.includes('draft')) {
-    return {
-      type: 'drafts',
-      title: 'Draft Suggestions',
-      content: intelligence.drafts,
-    };
-  }
-
-  return {
-    type: 'text',
-    content: buildReply(option, intelligence),
-  };
-};
-
 export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
   const caseData = navState?.caseData || DEFAULT_CASE;
 
@@ -236,161 +185,35 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
     return CASE_INTELLIGENCE[caseData.id] || DEFAULT_INTELLIGENCE;
   }, [caseData.id]);
 
-  const fileInputRef = useRef(null);
+  const messagesEndRef = useRef(null);
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
-  const [caseDocuments, setCaseDocuments] = useState(intelligence.documents);
   const [decision, setDecision] = useState(null);
 
   useEffect(() => {
-    setCaseDocuments(intelligence.documents);
     setChatMessages([]);
     setDecision(null);
-  }, [caseData.id, intelligence.documents]);
+  }, [caseData.id]);
 
-  const pushConversation = (promptText) => {
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
+  const pushConversation = (promptText, userLabel = promptText) => {
     const cleaned = promptText.trim();
     if (!cleaned) return;
 
-    const reply = buildAssistantResponse(cleaned, intelligence);
+    const reply = buildReply(cleaned, intelligence);
     setChatMessages((prev) => [
       ...prev,
-      { id: Date.now(), role: 'user', type: 'text', text: cleaned },
-      { id: Date.now() + 1, role: 'assistant', ...reply },
+      { id: Date.now(), role: 'user', text: userLabel },
+      { id: Date.now() + 1, role: 'assistant', content: reply },
     ]);
     setChatInput('');
   };
 
-  const handleUploadClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  const handleDocumentUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setCaseDocuments((prev) => {
-      if (prev.includes(file.name)) return prev;
-      return [...prev, file.name];
-    });
-
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        role: 'assistant',
-        type: 'text',
-        content: `${file.name} uploaded successfully. I have added it to client documents.`,
-      },
-    ]);
-
-    e.target.value = '';
-  };
-
-  const renderAssistantCard = (message) => {
-    if (message.type === 'brief') {
-      return (
-        <div className="bg-white border border-slate-200 rounded-xl p-3">
-          <p className="text-xs uppercase tracking-wide text-slate-500 font-bold mb-2">{message.title}</p>
-          <p className="text-sm leading-6 text-slate-700">{message.content}</p>
-        </div>
-      );
-    }
-
-    if (message.type === 'checklist') {
-      return (
-        <div className="bg-white border border-slate-200 rounded-xl p-3">
-          <p className="text-xs uppercase tracking-wide text-slate-500 font-bold mb-2">{message.title}</p>
-          <div className="space-y-2">
-            {message.content.map((line, idx) => (
-              <div key={line} className="flex items-start justify-between gap-3 text-sm border-b border-slate-100 pb-2 last:border-0 last:pb-0">
-                <p className="text-slate-700">{line}</p>
-                <span className={idx === 4 ? 'text-amber-600 text-xs font-semibold' : 'text-emerald-600 text-xs font-semibold'}>
-                  {idx === 4 ? 'Follow up' : 'Done'}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    if (message.type === 'documents') {
-      return (
-        <div className="bg-white border border-slate-200 rounded-xl p-3">
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <p className="text-xs uppercase tracking-wide text-slate-500 font-bold">{message.title}</p>
-            <button
-              onClick={handleUploadClick}
-              className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold"
-            >
-              Upload
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              onChange={handleDocumentUpload}
-            />
-          </div>
-
-          <div className="space-y-2">
-            {caseDocuments.map((doc) => (
-              <div key={doc} className="flex items-center justify-between border border-slate-200 rounded-lg p-2 text-sm">
-                <p className="text-slate-700 truncate">{doc}</p>
-                <div className="flex gap-2 shrink-0">
-                  <button className="px-2 py-1 text-xs rounded-md border border-slate-300">View</button>
-                  <button className="px-2 py-1 text-xs rounded-md bg-blue-50 text-blue-700">AI Read</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    if (message.type === 'insights') {
-      return (
-        <div className="space-y-2">
-          {message.content.map((item) => (
-            <div key={item.title} className="bg-white border border-slate-200 rounded-xl p-3">
-              <div className="flex items-center justify-between mb-1">
-                <p className="font-semibold text-slate-800 text-sm">{item.title}</p>
-                <span className="text-xs text-red-500 font-semibold">{item.priority}</span>
-              </div>
-              <p className="text-sm text-slate-600">{item.text}</p>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    if (message.type === 'drafts') {
-      return (
-        <div className="space-y-2">
-          {message.content.map((draft, idx) => (
-            <div key={draft} className="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2">
-              <div>
-                <p className="font-semibold text-slate-800 text-sm">{draft}</p>
-                <p className="text-xs text-slate-500">{idx === 1 ? 'Needs review' : 'Auto-generated'}</p>
-              </div>
-              <div className="flex gap-2">
-                <button className="px-2 py-1 text-xs rounded-md border border-slate-300">Preview</button>
-                <button className="px-2 py-1 text-xs rounded-md bg-[#071b33] text-white">Edit</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      );
-    }
-
-    return (
-      <div className="bg-white border border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-sm leading-6 whitespace-pre-line">
-        {message.content}
-      </div>
-    );
+  const handleMenuPick = (menuItem) => {
+    pushConversation(menuItem.prompt, `${menuItem.icon} ${menuItem.label}`);
   };
 
   return (
@@ -475,49 +298,79 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
           </Card>
         </div>
 
-        <Card className="xl:col-span-8 p-0 flex flex-col min-h-[560px]">
-          <div className="p-5 border-b border-slate-200">
-            <p className="text-sm font-semibold text-slate-800">AI Case Chatbot</p>
-            <p className="text-xs text-slate-500 mt-1">Ask questions or tap quick actions, just like a real chat assistant.</p>
-          </div>
-
-          <div className="flex-1 p-5 bg-slate-50 overflow-y-auto space-y-4">
-            <div className="flex justify-start">
-              <div className="max-w-[72%] bg-white border border-slate-200 text-slate-700 rounded-xl px-3 py-2 text-sm leading-6">
-                Hi, I am your AI Case Assistant for {caseData.name}. Choose an option below or ask a custom question.
+        <Card className="xl:col-span-8 p-0 flex flex-col min-h-[560px] overflow-hidden">
+          <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative h-14 w-14 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700">
+                <Bot size={24} />
+                <span className="absolute -bottom-0.5 right-0.5 h-3.5 w-3.5 rounded-full bg-lime-500 border-2 border-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-800 leading-none">case bot</p>
+                <p className="text-base text-slate-400 mt-1">Online</p>
               </div>
             </div>
+            <button className="h-10 w-10 rounded-xl text-slate-500 hover:bg-slate-200/60 flex items-center justify-center">
+              <X size={28} />
+            </button>
+          </div>
 
-            <div className="flex flex-wrap gap-2 pl-1">
-              {QUICK_OPTIONS.map((option) => (
-                <button
-                  key={option}
-                  onClick={() => pushConversation(option)}
-                  className="px-3 py-1.5 rounded-full border border-slate-300 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50"
-                >
-                  {option}
-                </button>
-              ))}
+          <div className="flex-1 p-4 sm:p-6 bg-slate-100 overflow-y-auto">
+            <div className="flex items-start gap-3 mb-5">
+              <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600">
+                <Bot size={16} />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-700 mb-2">case bot</p>
+                <div className="w-full max-w-[340px] rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                  <div className="px-4 py-4 text-[18px] leading-7 font-semibold text-slate-800 border-b border-slate-200">
+                    👋 Hi there! I am your case assistant for {caseData.name}. What would you like to discuss?
+                  </div>
+                  <div className="divide-y divide-slate-200">
+                    {CASE_BOT_MENU.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => handleMenuPick(item)}
+                        className="w-full px-4 py-3.5 text-left font-semibold text-blue-700 hover:bg-slate-50"
+                      >
+                        <span className="mr-2" aria-hidden="true">{item.icon}</span>
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {chatMessages.map((message) => {
               const isUser = message.role === 'user';
 
               return (
-                <div key={message.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                <div key={message.id} className={`mb-5 flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                   {isUser ? (
-                    <div className="max-w-[72%] whitespace-pre-line px-4 py-2 rounded-2xl text-sm leading-6 bg-[#071b33] text-white rounded-br-md">
+                    <div className="max-w-[78%] rounded-2xl rounded-tr-md bg-yellow-400 text-slate-900 px-5 py-3 text-lg font-semibold shadow-sm">
                       {message.text}
                     </div>
                   ) : (
-                    <div className="max-w-[82%]">{renderAssistantCard(message)}</div>
+                    <div className="flex items-start gap-3">
+                      <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600">
+                        <Bot size={16} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-slate-700 mb-1.5">case bot</p>
+                        <div className="max-w-[360px] bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-md px-4 py-3.5 text-[17px] leading-7 whitespace-pre-line shadow-sm">
+                          {message.content}
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
               );
             })}
+            <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 border-t border-slate-200 bg-white">
+          <div className="p-3 border-t border-slate-200 bg-white">
             <div className="flex items-center gap-2">
               <input
                 value={chatInput}
@@ -528,14 +381,14 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
                     pushConversation(chatInput);
                   }
                 }}
-                placeholder="Ask about this case..."
-                className="flex-1 h-11 px-4 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                placeholder="Send a message..."
+                className="flex-1 h-11 px-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300"
               />
               <button
                 onClick={() => pushConversation(chatInput)}
-                className="h-11 px-5 rounded-xl bg-[#071b33] text-white font-semibold"
+                className="h-11 w-11 rounded-xl bg-slate-200 text-slate-500 hover:bg-slate-300 flex items-center justify-center"
               >
-                Send
+                <SendHorizonal size={18} />
               </button>
             </div>
           </div>
