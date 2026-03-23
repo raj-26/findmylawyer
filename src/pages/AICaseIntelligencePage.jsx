@@ -266,18 +266,6 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
 
           <Card className="p-0">
             <div className="p-5">
-              <p className="text-xs uppercase tracking-wide text-slate-500 font-bold mb-3">Case Snapshot</p>
-              <div className="space-y-3 text-sm text-slate-600">
-                <p><span className="font-semibold text-slate-800">Case ID:</span> {caseData.id}</p>
-                <p><span className="font-semibold text-slate-800">Priority:</span> {caseData.priority}</p>
-                <p><span className="font-semibold text-slate-800">Stage:</span> {caseData.stage}</p>
-                <p><span className="font-semibold text-slate-800">Next Milestone:</span> {caseData.next}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-0">
-            <div className="p-5">
               <p className="text-xs uppercase tracking-wide text-slate-500 font-bold mb-3">Quick Actions</p>
               <div className="space-y-2">
                 {[
@@ -298,32 +286,32 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
           </Card>
         </div>
 
-        <Card className="xl:col-span-8 p-0 flex flex-col min-h-[560px] overflow-hidden">
-          <div className="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative h-14 w-14 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700">
-                <Bot size={24} />
-                <span className="absolute -bottom-0.5 right-0.5 h-3.5 w-3.5 rounded-full bg-lime-500 border-2 border-white" />
+        <Card className="xl:col-span-8 p-0 flex flex-col min-h-[560px] overflow-hidden border border-slate-200 shadow-none bg-white">
+          <div className="px-4 py-3 bg-white border-b border-slate-200 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="relative h-11 w-11 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600">
+                <Bot size={18} />
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-lime-500 border border-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800 leading-none">case bot</p>
-                <p className="text-base text-slate-400 mt-1">Online</p>
+                <p className="text-lg font-semibold text-slate-800 leading-none">case bot</p>
+                <p className="text-xs text-slate-500 mt-1">Online</p>
               </div>
             </div>
-            <button className="h-10 w-10 rounded-xl text-slate-500 hover:bg-slate-200/60 flex items-center justify-center">
-              <X size={28} />
+            <button className="h-8 w-8 rounded-lg text-slate-400 hover:bg-slate-100 flex items-center justify-center transition-colors">
+              <X size={18} />
             </button>
           </div>
 
-          <div className="flex-1 p-4 sm:p-6 bg-slate-100 overflow-y-auto">
-            <div className="flex items-start gap-3 mb-5">
-              <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600">
-                <Bot size={16} />
+          <div className="flex-1 p-3 sm:p-4 bg-slate-50 overflow-y-auto">
+            <div className="flex items-start gap-2.5 mb-4">
+              <div className="h-7 w-7 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500">
+                <Bot size={14} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-slate-700 mb-2">case bot</p>
-                <div className="w-full max-w-[340px] rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
-                  <div className="px-4 py-4 text-[18px] leading-7 font-semibold text-slate-800 border-b border-slate-200">
+                <p className="text-[11px] font-semibold text-slate-600 mb-1.5">case bot</p>
+                <div className="w-full max-w-[320px] rounded-xl border border-slate-200 bg-white overflow-hidden shadow-none">
+                  <div className="px-3 py-3 text-sm leading-6 font-medium text-slate-800 border-b border-slate-200">
                     👋 Hi there! I am your case assistant for {caseData.name}. What would you like to discuss?
                   </div>
                   <div className="divide-y divide-slate-200">
@@ -331,7 +319,7 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
                       <button
                         key={item.id}
                         onClick={() => handleMenuPick(item)}
-                        className="w-full px-4 py-3.5 text-left font-semibold text-blue-700 hover:bg-slate-50"
+                        className="w-full px-3 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                       >
                         <span className="mr-2" aria-hidden="true">{item.icon}</span>
                         {item.label}
@@ -346,19 +334,19 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
               const isUser = message.role === 'user';
 
               return (
-                <div key={message.id} className={`mb-5 flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                <div key={message.id} className={`mb-4 flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                   {isUser ? (
-                    <div className="max-w-[78%] rounded-2xl rounded-tr-md bg-yellow-400 text-slate-900 px-5 py-3 text-lg font-semibold shadow-sm">
+                    <div className="max-w-[75%] rounded-xl rounded-tr-sm bg-amber-300 text-slate-900 px-3.5 py-2 text-sm font-medium shadow-none border border-amber-400/40">
                       {message.text}
                     </div>
                   ) : (
-                    <div className="flex items-start gap-3">
-                      <div className="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600">
-                        <Bot size={16} />
+                    <div className="flex items-start gap-2.5">
+                      <div className="h-7 w-7 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500">
+                        <Bot size={14} />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-slate-700 mb-1.5">case bot</p>
-                        <div className="max-w-[360px] bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-md px-4 py-3.5 text-[17px] leading-7 whitespace-pre-line shadow-sm">
+                        <p className="text-[11px] font-semibold text-slate-600 mb-1">case bot</p>
+                        <div className="max-w-[340px] bg-white border border-slate-200 text-slate-700 rounded-xl rounded-tl-sm px-3 py-2.5 text-sm leading-6 whitespace-pre-line shadow-none">
                           {message.content}
                         </div>
                       </div>
@@ -370,7 +358,7 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-3 border-t border-slate-200 bg-white">
+          <div className="p-2.5 border-t border-slate-200 bg-white">
             <div className="flex items-center gap-2">
               <input
                 value={chatInput}
@@ -382,13 +370,13 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
                   }
                 }}
                 placeholder="Send a message..."
-                className="flex-1 h-11 px-4 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                className="flex-1 h-10 px-3.5 rounded-lg border border-slate-200 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
               />
               <button
                 onClick={() => pushConversation(chatInput)}
-                className="h-11 w-11 rounded-xl bg-slate-200 text-slate-500 hover:bg-slate-300 flex items-center justify-center"
+                className="h-10 w-10 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 hover:bg-slate-200 flex items-center justify-center transition-colors"
               >
-                <SendHorizonal size={18} />
+                <SendHorizonal size={16} />
               </button>
             </div>
           </div>

@@ -36,9 +36,9 @@ export const MainLayout = ({ children, currentPage, onNavigate, onLogout }) => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#f3f5f8]">
-      <div className="flex min-h-screen">
-        <aside className="hidden lg:flex w-[226px] bg-gradient-to-b from-[#061a33] to-[#041325] text-white flex-col border-r border-white/10 shadow-[8px_0_24px_rgba(2,6,23,0.2)]">
+    <div className="h-screen bg-[#f3f5f8] overflow-hidden">
+      <div className="flex h-full">
+        <aside className="hidden lg:flex w-[226px] h-full overflow-y-auto bg-gradient-to-b from-[#061a33] to-[#041325] text-white flex-col border-r border-white/10 shadow-[8px_0_24px_rgba(2,6,23,0.2)]">
           <div className="px-5 py-5 border-b border-white/10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-sm font-bold">FM</div>
@@ -97,7 +97,7 @@ export const MainLayout = ({ children, currentPage, onNavigate, onLogout }) => {
           </div>
         </aside>
 
-        <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex-1 min-w-0 min-h-0 flex flex-col">
           <header className="h-[66px] bg-white/90 backdrop-blur border-b border-slate-200 px-5 sm:px-8 flex items-center justify-between sticky top-0 z-20">
             <p className="text-sm text-slate-500">
               Portal <span className="mx-1">/</span>
@@ -116,7 +116,7 @@ export const MainLayout = ({ children, currentPage, onNavigate, onLogout }) => {
             </div>
           </header>
 
-          <main className="flex-1 p-3 sm:p-4">{children}</main>
+          <main className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4">{children}</main>
         </div>
       </div>
     </div>
