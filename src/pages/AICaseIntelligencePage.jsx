@@ -178,6 +178,23 @@ const buildReply = (option, intelligence) => {
   return `I can help with Brief, Checklist, Documents, Insights, and Drafts for ${intelligence.status.toLowerCase()}. Try one of the quick options above.`;
 };
 
+const buildAssistantMessage = (option, intelligence) => {
+  const normalized = option.trim().toLowerCase();
+
+  if (normalized.includes('document')) {
+    return {
+      type: 'documents',
+      title: 'Client Documents',
+      content: intelligence.documents,
+    };
+  }
+
+  return {
+    type: 'text',
+    content: buildReply(option, intelligence),
+  };
+};
+
 export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
   const caseData = navState?.caseData || DEFAULT_CASE;
 
@@ -185,15 +202,18 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
     return CASE_INTELLIGENCE[caseData.id] || DEFAULT_INTELLIGENCE;
   }, [caseData.id]);
 
+  const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
+  const [caseDocuments, setCaseDocuments] = useState(intelligence.documents);
   const [decision, setDecision] = useState(null);
 
   useEffect(() => {
     setChatMessages([]);
+    setCaseDocuments(intelligence.documents);
     setDecision(null);
-  }, [caseData.id]);
+  }, [caseData.id, intelligence.documents]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -203,16 +223,48 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
     const cleaned = promptText.trim();
     if (!cleaned) return;
 
-    const reply = buildReply(cleaned, intelligence);
+    const reply = buildAssistantMessage(cleaned, { ...intelligence, documents: caseDocuments });
     setChatMessages((prev) => [
       ...prev,
       { id: Date.now(), role: 'user', text: userLabel },
-      { id: Date.now() + 1, role: 'assistant', content: reply },
+      { id: Date.now() + 1, role: 'assistant', ...reply },
     ]);
     setChatInput('');
   };
 
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleDocumentUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const newNames = files.map((file) => file.name);
+    setCaseDocuments((prev) => {
+      const unique = newNames.filter((name) => !prev.includes(name));
+      if (!unique.length) return prev;
+      return [...prev, ...unique];
+    });
+
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        role: 'assistant',
+        content: `Uploaded successfully:\n${newNames.map((name, idx) => `${idx + 1}. ${name}`).join('\n')}`,
+      },
+    ]);
+
+    e.target.value = '';
+  };
+
   const handleMenuPick = (menuItem) => {
+    if (menuItem.id === 'upload') {
+      handleUploadClick();
+      return;
+    }
+
     pushConversation(menuItem.prompt, `${menuItem.icon} ${menuItem.label}`);
   };
 
@@ -282,6 +334,13 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
                   </button>
                 ))}
               </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleDocumentUpload}
+              />
             </div>
           </Card>
         </div>
@@ -346,9 +405,30 @@ export const AICaseIntelligencePage = ({ onNavigate, navState }) => {
                       </div>
                       <div>
                         <p className="text-[11px] font-semibold text-slate-600 mb-1">case bot</p>
-                        <div className="max-w-[340px] bg-white border border-slate-200 text-slate-700 rounded-xl rounded-tl-sm px-3 py-2.5 text-sm leading-6 whitespace-pre-line shadow-none">
-                          {message.content}
-                        </div>
+                        {message.type === 'documents' ? (
+                          <div className="max-w-[340px] bg-white border border-slate-200 text-slate-700 rounded-xl rounded-tl-sm px-3 py-2.5 text-sm leading-6 shadow-none">
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <p className="text-xs font-semibold text-slate-700">{message.title}</p>
+                              <button
+                                onClick={handleUploadClick}
+                                className="px-2.5 py-1 rounded-md border border-slate-200 bg-slate-50 text-[11px] font-medium text-slate-600 hover:bg-slate-100"
+                              >
+                                Upload
+                              </button>
+                            </div>
+                            <div className="space-y-1">
+                              {caseDocuments.map((doc, idx) => (
+                                <p key={`${doc}-${idx}`} className="text-sm text-slate-600 truncate">
+                                  {idx + 1}. {doc}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="max-w-[340px] bg-white border border-slate-200 text-slate-700 rounded-xl rounded-tl-sm px-3 py-2.5 text-sm leading-6 whitespace-pre-line shadow-none">
+                            {message.content}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
